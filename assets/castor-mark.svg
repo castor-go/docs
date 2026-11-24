@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="markTitle">
+  <title id="markTitle">Castor</title>
+  <rect width="64" height="64" rx="17" fill="#7A5A48"/>
+  <circle cx="19" cy="19" r="11" fill="#A27B62"/>
+  <circle cx="45" cy="19" r="11" fill="#A27B62"/>
+  <circle cx="19" cy="19" r="5.5" fill="#C9A98B"/>
+  <circle cx="45" cy="19" r="5.5" fill="#C9A98B"/>
+  <path d="M32 15c13 0 21 9 21 21 0 13-9 20-21 20S11 49 11 36c0-12 8-21 21-21Z" fill="#A27B62"/>
+  <ellipse cx="32" cy="42" rx="14" ry="10" fill="#E8DCCF"/>
+  <circle cx="25" cy="33" r="3" fill="#2B2420"/>
+  <circle cx="39" cy="33" r="3" fill="#2B2420"/>
+  <path d="M32 37c3 0 5 2 5 4 0 3-2 5-5 5s-5-2-5-5c0-2 2-4 5-4Z" fill="#2B2420"/>
+  <rect x="29" y="45" width="3" height="7" rx="1.2" fill="#E8DCCF"/>
+  <rect x="33" y="45" width="3" height="7" rx="1.2" fill="#E8DCCF"/>
+</svg>

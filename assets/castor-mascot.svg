@@ -1,0 +1,85 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 560 520" role="img" aria-labelledby="castorTitle castorDesc">
+  <title id="castorTitle">Castor the beaver</title>
+  <desc id="castorDesc">A friendly beaver with a flat crosshatched tail, holding a wooden building block carved with code brackets.</desc>
+  <defs>
+    <linearGradient id="fur" x1="190" y1="250" x2="420" y2="475" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#A27B62"/>
+      <stop offset="1" stop-color="#7A5A48"/>
+    </linearGradient>
+    <linearGradient id="headFur" x1="190" y1="100" x2="430" y2="340" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#A27B62"/>
+      <stop offset="1" stop-color="#7A5A48"/>
+    </linearGradient>
+    <linearGradient id="wood" x1="218" y1="355" x2="385" y2="460" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#C9A98B"/>
+      <stop offset="1" stop-color="#A27B62"/>
+    </linearGradient>
+    <filter id="drop" x="-25%" y="-25%" width="150%" height="150%">
+      <feDropShadow dx="0" dy="12" stdDeviation="13" flood-color="#2B2420" flood-opacity=".18"/>
+    </filter>
+    <filter id="soft" x="-25%" y="-25%" width="150%" height="150%">
+      <feDropShadow dx="0" dy="6" stdDeviation="8" flood-color="#2B2420" flood-opacity=".12"/>
+    </filter>
+  </defs>
+
+  <ellipse cx="285" cy="482" rx="188" ry="16" fill="#2B2420" opacity=".1"/>
+
+  <g transform="rotate(-16 145 398)" filter="url(#soft)">
+    <ellipse cx="145" cy="398" rx="100" ry="50" fill="#7A5A48" stroke="#2B2420" stroke-opacity=".22" stroke-width="4"/>
+    <path d="M58 373c38-8 92 8 137 32M53 396c43-8 99 8 149 32M66 420c40-8 91 6 133 24M86 356c28-5 62 5 92 18M99 441c29-6 63 1 89 10" fill="none" stroke="#C9A98B" stroke-opacity=".38" stroke-width="4" stroke-linecap="round"/>
+  </g>
+
+  <path d="M205 332c0-47 40-77 95-77 60 0 100 37 100 100v75c0 28-25 40-100 40s-95-15-95-45Z" fill="url(#fur)" filter="url(#drop)"/>
+  <ellipse cx="300" cy="388" rx="80" ry="72" fill="#E8DCCF" opacity=".9"/>
+  <ellipse cx="245" cy="466" rx="42" ry="18" fill="#7A5A48"/>
+  <ellipse cx="355" cy="466" rx="42" ry="18" fill="#7A5A48"/>
+
+  <path d="M225 350c-25 15-30 40-5 55" fill="none" stroke="#A27B62" stroke-width="30" stroke-linecap="round"/>
+  <path d="M375 350c25 15 30 40 5 55" fill="none" stroke="#A27B62" stroke-width="30" stroke-linecap="round"/>
+
+  <g filter="url(#soft)">
+    <circle cx="190" cy="142" r="44" fill="#7A5A48"/>
+    <circle cx="190" cy="142" r="24" fill="#C9A98B"/>
+    <circle cx="410" cy="142" r="44" fill="#7A5A48"/>
+    <circle cx="410" cy="142" r="24" fill="#C9A98B"/>
+  </g>
+
+  <path d="M300 88c92 0 144 58 144 137 0 80-54 121-144 121s-144-41-144-121C156 146 208 88 300 88Z" fill="url(#headFur)" filter="url(#drop)"/>
+  <ellipse cx="265" cy="128" rx="56" ry="28" fill="#E8DCCF" opacity=".1"/>
+  <ellipse cx="300" cy="260" rx="98" ry="64" fill="#E8DCCF"/>
+  <ellipse cx="228" cy="252" rx="34" ry="24" fill="#C9A98B" opacity=".38"/>
+  <ellipse cx="372" cy="252" rx="34" ry="24" fill="#C9A98B" opacity=".38"/>
+
+  <circle cx="250" cy="202" r="15" fill="#2B2420"/>
+  <circle cx="350" cy="202" r="15" fill="#2B2420"/>
+  <circle cx="245" cy="197" r="4.5" fill="#E8DCCF"/>
+  <circle cx="345" cy="197" r="4.5" fill="#E8DCCF"/>
+  <path d="M228 178q22-10 44 0" fill="none" stroke="#2B2420" stroke-opacity=".55" stroke-width="5" stroke-linecap="round"/>
+  <path d="M328 178q22-10 44 0" fill="none" stroke="#2B2420" stroke-opacity=".55" stroke-width="5" stroke-linecap="round"/>
+
+  <path d="M300 232c15 0 26 8 26 17 0 11-13 19-26 19s-26-8-26-19c0-9 11-17 26-17Z" fill="#2B2420"/>
+  <ellipse cx="300" cy="243" rx="7" ry="4" fill="#E8DCCF" opacity=".18"/>
+  <path d="M300 268c0 10-12 16-20 13M300 268c0 10 12 16 20 13" fill="none" stroke="#7A5A48" stroke-width="4" stroke-linecap="round"/>
+  <rect x="286" y="272" width="12" height="28" rx="4" fill="#E8DCCF" stroke="#C9A98B" stroke-width="2"/>
+  <rect x="302" y="272" width="12" height="28" rx="4" fill="#E8DCCF" stroke="#C9A98B" stroke-width="2"/>
+
+  <g fill="none" stroke="#7A5A48" stroke-linecap="round" stroke-width="3" opacity=".48">
+    <path d="M212 250 182 242M212 262 178 260M214 274 184 280"/>
+    <path d="M388 250 418 242M388 262 422 260M386 274 416 280"/>
+  </g>
+
+  <g filter="url(#drop)">
+    <rect x="215" y="355" width="170" height="105" rx="16" fill="url(#wood)"/>
+    <rect x="215" y="355" width="170" height="17" rx="8" fill="#E8DCCF" opacity=".48"/>
+    <path d="M240 390c30-12 60 12 90-2 20-10 35-2 45 8M238 415c34-13 67 11 100-3 17-8 30 0 38 9" fill="none" stroke="#7A5A48" stroke-width="4" stroke-linecap="round" opacity=".58"/>
+    <text x="300" y="445" text-anchor="middle" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="30" font-weight="700" fill="#2B2420" opacity=".84">&lt;/&gt;</text>
+  </g>
+
+  <ellipse cx="232" cy="362" rx="22" ry="14" fill="#7A5A48" transform="rotate(-18 232 362)"/>
+  <ellipse cx="368" cy="362" rx="22" ry="14" fill="#7A5A48" transform="rotate(18 368 362)"/>
+
+  <circle cx="112" cy="218" r="7" fill="#C9A98B" opacity=".85"/>
+  <circle cx="474" cy="184" r="5" fill="#A27B62" opacity=".8"/>
+  <circle cx="88" cy="470" r="6" fill="#E8DCCF"/>
+  <circle cx="500" cy="370" r="4" fill="#C9A98B" opacity=".8"/>
+</svg>
