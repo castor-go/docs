@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Get Started — Castor Docs</title>
+  <meta name="description"
+    content="Build a simple JSON web API with Castor, the function-first Go web library built on net/http.">
+  <meta name="theme-color" content="#E8DCCF">
+  <link rel="icon" type="image/svg+xml" href="assets/castor-mark.svg">
+  <script>
+    (() => {
+      const saved = (() => {
+        try { return localStorage.getItem('castor-theme'); } catch { return null; }
+      })();
+      const theme = saved === 'light' || saved === 'dark'
+        ? saved
+        : (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+      document.documentElement.dataset.theme = theme;
+    })();
+  </script>
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+    crossorigin="anonymous" referrerpolicy="no-referrer">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="docs.css">
+</head>
+
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="site-header">
+    <nav class="nav container" aria-label="Main navigation">
+      <a class="brand" href="index.html" aria-label="Castor home">
+        <img class="brand-mark" src="assets/castor-mark.svg" width="40" height="40" alt="">
+        <span class="brand-name">Castor</span>
+        <span class="brand-badge">Docs</span>
+      </a>
+
+      <div class="nav-links docs-top-nav">
+        <a class="is-active" href="get-started.html" aria-current="page">Documentation</a>
+        <a href="https://github.com/castor-go/castor" target="_blank" rel="noreferrer">GitHub</a>
+      </div>
+
+      <div class="nav-actions">
+        <a class="nav-github" href="https://github.com/castor-go/castor" target="_blank" rel="noreferrer"
+          aria-label="Castor on GitHub">
+          <i class="fa-brands fa-github" aria-hidden="true"></i>
+        </a>
+        <button class="theme-toggle" type="button" data-theme-toggle aria-label="Switch to dark theme"
+          aria-pressed="false">
+          <span class="theme-icon theme-icon-light" aria-hidden="true"><i class="fa-solid fa-moon"></i></span>
+          <span class="theme-icon theme-icon-dark" aria-hidden="true"><i class="fa-solid fa-sun"></i></span>
+        </button>
+      </div>
+    </nav>
+  </header>
+
+  <div class="docs-shell container">
+    <aside class="docs-sidebar" aria-label="Documentation navigation">
+      <p class="docs-sidebar-eyebrow">Documentation</p>
+
+      <nav class="docs-nav" aria-label="Documentation pages">
+        <a class="docs-nav-link is-active" href="get-started.html" aria-current="page">
+          <span>Get Started</span>
+          <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
+        </a>
+        <span class="docs-nav-link is-disabled" aria-disabled="true">
+          <span>Configuration</span>
+          <span class="docs-nav-badge">Soon</span>
+        </span>
+        <span class="docs-nav-link is-disabled" aria-disabled="true">
+          <span>Middlewares</span>
+          <span class="docs-nav-badge">Soon</span>
+        </span>
+        <span class="docs-nav-link is-disabled" aria-disabled="true">
+          <span>Cookies</span>
+          <span class="docs-nav-badge">Soon</span>
+        </span>
+      </nav>
+
+      <div class="docs-sidebar-divider" role="presentation"></div>
+      <p class="docs-sidebar-eyebrow docs-sidebar-eyebrow-small">Full reference</p>
+      <nav class="docs-reference-links" aria-label="API reference">
+        <a href="https://github.com/castor-go/castor/blob/main/docs/castor.md" target="_blank" rel="noreferrer">
+          Core API
+          <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i>
+        </a>
+        <a href="https://github.com/castor-go/castor/blob/main/docs/middleware.md" target="_blank" rel="noreferrer">
+          Middlewares
+          <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i>
+        </a>
+      </nav>
+    </aside>
+
+    <main class="docs-content" id="main">
+      <header class="docs-hero">
+        <p class="eyebrow"><span class="eyebrow-dot" aria-hidden="true"></span> Get Started</p>
+        <h1>Build a simple web API<span class="hero-period">.</span></h1>
+        <p class="docs-lede">Create a small JSON API with Castor in one Go file. You will add routes, read a path
+          parameter, accept JSON, and start a server built entirely on the standard library.</p>
+
+        <ul class="docs-meta" aria-label="Guide details">
+          <li class="docs-pill"><i class="fa-regular fa-clock" aria-hidden="true"></i> ~10 min</li>
+          <li class="docs-pill"><i class="fa-solid fa-code" aria-hidden="true"></i> Go 1.27+</li>
+          <li class="docs-pill"><i class="fa-solid fa-feather" aria-hidden="true"></i> Zero dependencies</li>
+        </ul>
+      </header>
+
+      <section class="docs-section" id="install" aria-labelledby="install-title">
+        <div class="docs-step-heading">
+          <span class="step-number" aria-hidden="true">1</span>
+          <h2 id="install-title">Set up the module</h2>
+        </div>
+        <p>Create a new directory, initialize a Go module, and add Castor.</p>
+
+        <div class="code-card docs-code-card">
+          <div class="code-toolbar">
+            <div class="traffic-lights" aria-hidden="true"><span></span><span></span><span></span></div>
+            <span class="code-filename">terminal</span>
+            <button class="copy-button" type="button" data-copy-target="#install-code"
+              aria-label="Copy install commands">
+              <span class="copy-default" aria-hidden="true"><i class="fa-regular fa-copy"></i><span
+                  class="copy-label">Copy</span></span>
+              <span class="copy-success" aria-hidden="true"><i class="fa-solid fa-check"></i><span
+                  class="copy-label">Copied</span></span>
+            </button>
+          </div>
+          <div class="code-body">
+            <pre class="code"><code id="install-code">mkdir castor-api
+cd castor-api
+go mod init castor-api
+go get github.com/castor-go/castor</code></pre>
+          </div>
+        </div>
+      </section>
+
+      <section class="docs-section" id="write" aria-labelledby="write-title">
+        <div class="docs-step-heading">
+          <span class="step-number" aria-hidden="true">2</span>
+          <h2 id="write-title">Write the API</h2>
+        </div>
+        <p>Create <code>main.go</code>. The server exposes a status endpoint, a route with a path parameter, and an
+          endpoint that accepts JSON.</p>
+
+        <div class="code-card docs-code-card">
+          <div class="code-toolbar">
+            <div class="traffic-lights" aria-hidden="true"><span></span><span></span><span></span></div>
+            <span class="code-filename">main.go</span>
+            <button class="copy-button" type="button" data-copy-target="#api-code" aria-label="Copy API example code">
+              <span class="copy-default" aria-hidden="true"><i class="fa-regular fa-copy"></i><span
+                  class="copy-label">Copy</span></span>
+              <span class="copy-success" aria-hidden="true"><i class="fa-solid fa-check"></i><span
+                  class="copy-label">Copied</span></span>
+            </button>
+          </div>
+
+          <div class="code-body">
+            <pre class="code"><code id="api-code"><span class="tok-kw">package</span> main
+
+<span class="tok-kw">import</span> (
+	<span class="tok-str">"log"</span>
+	<span class="tok-str">"net/http"</span>
+
+	<span class="tok-str">"github.com/castor-go/castor"</span>
+	<span class="tok-str">"github.com/castor-go/castor/middleware"</span>
+)
+
+<span class="tok-kw">func</span> <span class="tok-fn">main</span>() {
+	api := <span class="tok-pkg">castor</span>.<span class="tok-fn">Server</span>().
+		<span class="tok-fn">Middlewares</span>(
+		    <span class="tok-pkg">middleware</span>.<span class="tok-fn">Recoverer</span>,
+			<span class="tok-pkg">middleware</span>.<span class="tok-fn">Heartbeat(<span class="tok-str">"/health"</span>)</span>
+		).
+		<span class="tok-fn">Routes</span>(
+			<span class="tok-pkg">castor</span>.<span class="tok-fn">Get</span>(<span class="tok-str">"/hello/{name}"</span>, <span class="tok-kw">func</span>(res <span class="tok-pkg">http</span>.<span class="tok-type">ResponseWriter</span>, req *<span class="tok-pkg">http</span>.<span class="tok-type">Request</span>) {
+				name := <span class="tok-pkg">castor</span>.<span class="tok-fn">GetPathParam</span>(req, <span class="tok-str">"name"</span>)
+				<span class="tok-pkg">castor</span>.<span class="tok-fn">Json</span>(res, <span class="tok-kw">map</span>[<span class="tok-kw">string</span>]<span class="tok-kw">string</span>{
+					<span class="tok-str">"message"</span>: <span class="tok-str">"Hello, "</span> + name + <span class="tok-str">"!"</span>,
+				})
+			}),
+			<span class="tok-pkg">castor</span>.<span class="tok-fn">Post</span>(<span class="tok-str">"/echo"</span>, <span class="tok-kw">func</span>(res <span class="tok-pkg">http</span>.<span class="tok-type">ResponseWriter</span>, req *<span class="tok-pkg">http</span>.<span class="tok-type">Request</span>) {
+				<span class="tok-kw">var</span> body <span class="tok-kw">map</span>[<span class="tok-kw">string</span>]<span class="tok-type">any</span>
+				<span class="tok-kw">if</span> err := <span class="tok-pkg">castor</span>.<span class="tok-fn">ReadJson</span>(req, &amp;body); err != <span class="tok-kw">nil</span> {
+					<span class="tok-pkg">castor</span>.<span class="tok-fn">Json</span>(w, <span class="tok-kw">map</span>[<span class="tok-kw">string</span>]<span class="tok-kw">string</span>{<span class="tok-str">"error"</span>: err.<span class="tok-fn">Error</span>()}, <span class="tok-pkg">http</span>.<span class="tok-fn">StatusBadRequest</span>)
+					<span class="tok-kw">return</span>
+				}
+				<span class="tok-pkg">castor</span>.<span class="tok-fn">Json</span>(res, body, <span class="tok-pkg">http</span>.<span class="tok-fn">StatusCreated</span>)
+			}),
+		)
+
+	<span class="tok-kw">if</span> err := api.<span class="tok-fn">Start</span>(); err != <span class="tok-kw">nil</span> {
+		<span class="tok-pkg">log</span>.<span class="tok-fn">Fatal</span>(err)
+	}
+}</code></pre>
+          </div>
+        </div>
+        <p class="docs-code-note">The Recoverer middleware turns panics into 500 responses instead of crashing the server.</p>
+      </section>
+
+      <section class="docs-section" id="run" aria-labelledby="run-title">
+        <div class="docs-step-heading">
+          <span class="step-number" aria-hidden="true">3</span>
+          <h2 id="run-title">Run the server</h2>
+        </div>
+        <p>Start the app from the project directory.</p>
+
+        <div class="code-card docs-code-card">
+          <div class="code-toolbar">
+            <div class="traffic-lights" aria-hidden="true"><span></span><span></span><span></span></div>
+            <span class="code-filename">terminal</span>
+            <button class="copy-button" type="button" data-copy-target="#run-code" aria-label="Copy run command">
+              <span class="copy-default" aria-hidden="true"><i class="fa-regular fa-copy"></i><span
+                  class="copy-label">Copy</span></span>
+              <span class="copy-success" aria-hidden="true"><i class="fa-solid fa-check"></i><span
+                  class="copy-label">Copied</span></span>
+            </button>
+          </div>
+          <div class="code-body">
+            <pre class="code"><code id="run-code">go run main.go</code></pre>
+          </div>
+          <div class="code-status">
+            <span class="status-dot" aria-hidden="true"></span>
+            <span>Listening on <strong>http://0.0.0.0:3000</strong></span>
+          </div>
+        </div>
+        <p>Press <code>Ctrl+C</code> to stop it. Castor handles the interrupt and shuts down gracefully.</p>
+      </section>
+
+      <section class="docs-section" id="call" aria-labelledby="call-title">
+        <div class="docs-step-heading">
+          <span class="step-number" aria-hidden="true">4</span>
+          <h2 id="call-title">Call the API</h2>
+        </div>
+        <p>The API has three routes:</p>
+
+        <div class="docs-endpoints">
+          <div class="docs-endpoint">
+            <div class="docs-endpoint-top">
+              <span class="docs-method docs-method-get">GET</span>
+              <code>/health</code>
+            </div>
+            <p>Returns the API status.</p>
+          </div>
+          <div class="docs-endpoint">
+            <div class="docs-endpoint-top">
+              <span class="docs-method docs-method-get">GET</span>
+              <code>/hello/{name}</code>
+            </div>
+            <p>Reads a path parameter.</p>
+          </div>
+          <div class="docs-endpoint">
+            <div class="docs-endpoint-top">
+              <span class="docs-method docs-method-post">POST</span>
+              <code>/echo</code>
+            </div>
+            <p>Parses JSON and returns it.</p>
+          </div>
+        </div>
+
+        <div class="code-card docs-code-card">
+          <div class="code-toolbar">
+            <div class="traffic-lights" aria-hidden="true"><span></span><span></span><span></span></div>
+            <span class="code-filename">terminal</span>
+            <button class="copy-button" type="button" data-copy-target="#curl-code" aria-label="Copy curl examples">
+              <span class="copy-default" aria-hidden="true"><i class="fa-regular fa-copy"></i><span
+                  class="copy-label">Copy</span></span>
+              <span class="copy-success" aria-hidden="true"><i class="fa-solid fa-check"></i><span
+                  class="copy-label">Copied</span></span>
+            </button>
+          </div>
+          <div class="code-body">
+            <pre class="code"><code id="curl-code">curl http://localhost:3000/health
+# {"status":"ok"}
+
+curl http://localhost:3000/hello/Ada
+# {"message":"Hello, Ada!"}
+
+curl -X POST http://localhost:3000/echo \
+  -H "Content-Type: application/json" \
+  -d '{"task":"ship it"}'
+# {"task":"ship it"}</code></pre>
+          </div>
+        </div>
+      </section>
+
+      <section class="docs-section" id="next" aria-labelledby="next-title">
+        <div class="docs-callout">
+          <span class="docs-callout-icon" aria-hidden="true"><i class="fa-solid fa-check"></i></span>
+          <div>
+            <h2 id="next-title">You have a running web API.</h2>
+            <p>Continue with the full references for configuration, middleware, cookies, and the rest of the
+              package.</p>
+          </div>
+        </div>
+
+        <div class="docs-actions">
+          <a class="button button-primary" href="https://github.com/castor-go/castor/blob/main/docs/castor.md"
+            target="_blank" rel="noreferrer">
+            Core API reference
+            <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i>
+          </a>
+          <a class="button button-ghost" href="https://github.com/castor-go/castor/blob/main/docs/middleware.md"
+            target="_blank" rel="noreferrer">
+            Middleware reference
+          </a>
+        </div>
+
+        <nav class="docs-footer-nav" aria-label="Next documentation page">
+          <span class="docs-nav-link is-disabled" aria-disabled="true">
+            <span>Next: Configuration</span>
+            <span class="docs-nav-badge">Soon</span>
+          </span>
+        </nav>
+      </section>
+    </main>
+  </div>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <a class="brand footer-brand" href="index.html" aria-label="Castor home">
+        <img class="brand-mark" src="assets/castor-mark.svg" width="30" height="30" alt="">
+        <span class="brand-name">Castor</span>
+      </a>
+      <p class="footer-note"><span class="footer-dot" aria-hidden="true"></span> Released under the MIT License</p>
+      <div class="footer-links">
+        <a href="https://github.com/castor-go/castor" target="_blank" rel="noreferrer">GitHub</a>
+        <a href="#main">Back to top <i class="fa-solid fa-arrow-up" aria-hidden="true"></i></a>
+      </div>
+    </div>
+  </footer>
+
+  <p class="sr-only" id="copy-status" role="status" aria-live="polite"></p>
+  <script src="main.js"></script>
+</body>
+
+</html>
