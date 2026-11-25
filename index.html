@@ -1,10 +1,12 @@
 <!DOCTYPE html>
 <html lang="en" data-theme="light">
+
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Castor — Simple, lightweight, built on Go standards</title>
-  <meta name="description" content="Castor is a simple, lightweight Go web framework built on net/http standards. Compose routes, groups, and middleware from plain functions.">
+  <meta name="description"
+    content="Castor is a simple, lightweight Go web framework built on net/http standards. Compose routes, groups, and middleware from plain functions.">
   <meta name="theme-color" content="#E8DCCF">
   <link rel="icon" type="image/svg+xml" href="assets/castor-mark.svg">
   <script>
@@ -19,9 +21,11 @@
     })();
   </script>
   <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+    crossorigin="anonymous" referrerpolicy="no-referrer">
   <link rel="stylesheet" href="styles.css">
 </head>
+
 <body>
   <a class="skip-link" href="#main">Skip to content</a>
 
@@ -36,14 +40,16 @@
       <div class="nav-links">
         <a href="#features">Features</a>
         <a href="#quickstart">Quick start</a>
-        <a href="https://github.com/castor-go/castor#readme" target="_blank" rel="noreferrer">Docs</a>
+        <a href="https://github.com/castor-go/castor/blob/main/docs/castor.md" target="_blank" rel="noreferrer">Docs</a>
       </div>
 
       <div class="nav-actions">
-        <a class="nav-github" href="https://github.com/castor-go/castor" target="_blank" rel="noreferrer" aria-label="Castor on GitHub">
+        <a class="nav-github" href="https://github.com/castor-go/castor" target="_blank" rel="noreferrer"
+          aria-label="Castor on GitHub">
           <i class="fa-brands fa-github" aria-hidden="true"></i>
         </a>
-        <button class="theme-toggle" type="button" data-theme-toggle aria-label="Switch to dark theme" aria-pressed="false">
+        <button class="theme-toggle" type="button" data-theme-toggle aria-label="Switch to dark theme"
+          aria-pressed="false">
           <span class="theme-icon theme-icon-light" aria-hidden="true"><i class="fa-solid fa-moon"></i></span>
           <span class="theme-icon theme-icon-dark" aria-hidden="true"><i class="fa-solid fa-sun"></i></span>
         </button>
@@ -59,7 +65,8 @@
           <p class="eyebrow"><span class="eyebrow-dot" aria-hidden="true"></span> The Go web library</p>
           <h1 class="hero-title" id="hero-title">Castor<span class="hero-period">.</span></h1>
           <p class="tagline">Simple, lightweight, built on Go standards</p>
-          <p class="lede">A function-first web framework for dependable services. Routes, groups, and middleware that feel like the standard library—because they are.</p>
+          <p class="lede">A function-first web framework for dependable services. Routes, groups, and middleware that
+            feel like the standard library—because they are.</p>
 
           <div class="hero-actions">
             <a class="button button-primary" href="#quickstart">
@@ -83,7 +90,8 @@
           <div class="hero-orbit hero-orbit-one" aria-hidden="true"></div>
           <div class="hero-orbit hero-orbit-two" aria-hidden="true"></div>
           <div class="mascot-wrap">
-            <img class="mascot" src="assets/castor-mascot.svg" width="560" height="520" alt="Castor, a friendly beaver holding a wooden block carved with code brackets">
+            <img class="mascot" src="assets/castor-mascot.svg" width="560" height="520"
+              alt="Castor, a friendly beaver holding a wooden block carved with code brackets">
           </div>
           <span class="floating-tag floating-tag-one"><span class="tag-dot" aria-hidden="true"></span> net/http</span>
           <span class="floating-tag floating-tag-two">0 deps</span>
@@ -96,7 +104,8 @@
         <div class="section-head">
           <p class="eyebrow"><span class="eyebrow-dot" aria-hidden="true"></span> Why Castor</p>
           <h2 id="features-title">Small pieces.<br><span class="text-accent">Strong structure.</span></h2>
-          <p class="section-lede">A beaver builds with what the forest provides. Castor builds with what Go provides—clear functions, standard interfaces, and a foundation you can trust and test.</p>
+          <p class="section-lede">A beaver builds with what the forest provides. Castor builds with what Go
+            provides—clear functions, standard interfaces, and a foundation you can trust and test.</p>
         </div>
 
         <div class="feature-grid">
@@ -106,7 +115,8 @@
               <span class="card-index">01</span>
             </div>
             <h3>Standards first</h3>
-            <p>Built directly on <code>net/http</code> and <code>http.ServeMux</code>. Predictable routing, familiar behavior, and no framework-specific abstractions to unlearn.</p>
+            <p>Built directly on <code>net/http</code> and <code>http.ServeMux</code>. Predictable routing, familiar
+              behavior, and no framework-specific abstractions to unlearn.</p>
             <span class="card-line" aria-hidden="true"></span>
           </article>
 
@@ -116,7 +126,8 @@
               <span class="card-index">02</span>
             </div>
             <h3>Compose by function</h3>
-            <p>Handlers, middleware, and route groups are ordinary functions. Chain them together, keep the pieces small, no magic, and test each one on its own.</p>
+            <p>Handlers, middleware, and route groups are ordinary functions. Chain them together, keep the pieces
+              small, no magic, and test each one on its own.</p>
             <span class="card-line" aria-hidden="true"></span>
           </article>
 
@@ -126,7 +137,8 @@
               <span class="card-index">03</span>
             </div>
             <h3>Light by nature</h3>
-            <p>A tiny API surface, zero third-party dependencies, and graceful shutdown included. Fast to start, simple to maintain, easy to reason about.</p>
+            <p>A tiny API surface, zero third-party dependencies, and graceful shutdown included. Fast to start, simple
+              to maintain, easy to reason about.</p>
             <span class="card-line" aria-hidden="true"></span>
           </article>
         </div>
@@ -139,7 +151,8 @@
           <div class="tutorial-copy">
             <p class="eyebrow"><span class="eyebrow-dot" aria-hidden="true"></span> Quick start</p>
             <h2 id="quickstart-title">A web app<br><span class="text-accent">in three steps.</span></h2>
-            <p class="section-lede">Castor keeps the happy path short. Define functions, wire them together, and let Go do the rest.</p>
+            <p class="section-lede">Castor keeps the happy path short. Define functions, wire them together, and let Go
+              do the rest.</p>
 
             <ol class="steps">
               <li>
@@ -148,7 +161,8 @@
                   <h3>Install Castor</h3>
                   <div class="install-command">
                     <code id="install-command">go get github.com/castor-go/castor</code>
-                    <button class="copy-button copy-button-compact" type="button" data-copy-target="#install-command" aria-label="Copy install command">
+                    <button class="copy-button copy-button-compact" type="button" data-copy-target="#install-command"
+                      aria-label="Copy install command">
                       <span class="copy-default" aria-hidden="true"><i class="fa-regular fa-copy"></i></span>
                       <span class="copy-success" aria-hidden="true"><i class="fa-solid fa-check"></i></span>
                     </button>
@@ -159,14 +173,17 @@
                 <span class="step-number" aria-hidden="true">2</span>
                 <div class="step-body">
                   <h3>Compose a route</h3>
-                  <p>Handlers stay standard. Wrap them with <code>castor.Get</code> and return JSON with <code>castor.Json</code>.</p>
+                  <p>Handlers stay standard. Wrap them with <code>castor.Get</code> and return JSON with
+                    <code>castor.Json</code>.
+                  </p>
                 </div>
               </li>
               <li>
                 <span class="step-number" aria-hidden="true">3</span>
                 <div class="step-body">
                   <h3>Start the server</h3>
-                  <p><code>Start</code> listens on port 3000, handles shutdown signals, and closes gracefully by default.</p>
+                  <p><code>Start</code> listens on port 3000, handles shutdown signals, and closes gracefully by
+                    default.</p>
                 </div>
               </li>
             </ol>
@@ -182,9 +199,12 @@
               <div class="code-toolbar">
                 <div class="traffic-lights" aria-hidden="true"><span></span><span></span><span></span></div>
                 <span class="code-filename">main.go</span>
-                <button class="copy-button" type="button" data-copy-target="#quickstart-code" aria-label="Copy quick start code">
-                  <span class="copy-default" aria-hidden="true"><i class="fa-regular fa-copy"></i><span class="copy-label">Copy</span></span>
-                  <span class="copy-success" aria-hidden="true"><i class="fa-solid fa-check"></i><span class="copy-label">Copied</span></span>
+                <button class="copy-button" type="button" data-copy-target="#quickstart-code"
+                  aria-label="Copy quick start code">
+                  <span class="copy-default" aria-hidden="true"><i class="fa-regular fa-copy"></i><span
+                      class="copy-label">Copy</span></span>
+                  <span class="copy-success" aria-hidden="true"><i class="fa-solid fa-check"></i><span
+                      class="copy-label">Copied</span></span>
                 </button>
               </div>
 
@@ -248,4 +268,5 @@
   <p class="sr-only" id="copy-status" role="status" aria-live="polite"></p>
   <script src="main.js"></script>
 </body>
+
 </html>
