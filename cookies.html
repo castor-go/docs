@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Cookies — Castor Docs</title>
+  <meta name="description"
+    content="Use Castor cookie helpers to build simple cookie-based authentication with server-side sessions and signed cookies.">
+  <meta name="theme-color" content="#E8DCCF">
+  <link rel="icon" type="image/svg+xml" href="assets/castor-mark.svg">
+  <script>
+    (() => {
+      const saved = (() => {
+        try { return localStorage.getItem('castor-theme'); } catch { return null; }
+      })();
+      const theme = saved === 'light' || saved === 'dark'
+        ? saved
+        : (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+      document.documentElement.dataset.theme = theme;
+    })();
+  </script>
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+    crossorigin="anonymous" referrerpolicy="no-referrer">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="docs.css">
+  <style>
+    .tok-comment {
+      color: var(--code-muted);
+      font-style: italic;
+    }
+  </style>
+</head>
+
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="site-header">
+    <nav class="nav container" aria-label="Main navigation">
+      <a class="brand" href="index.html" aria-label="Castor home">
+        <img class="brand-mark" src="assets/castor-mark.svg" width="40" height="40" alt="">
+        <span class="brand-name">Castor</span>
+        <span class="brand-badge">Docs</span>
+      </a>
+
+      <div class="nav-links docs-top-nav">
+        <a href="get-started.html">Documentation</a>
+        <a href="https://github.com/castor-go/castor" target="_blank" rel="noreferrer">GitHub</a>
+      </div>
+
+      <div class="nav-actions">
+        <a class="nav-github" href="https://github.com/castor-go/castor" target="_blank" rel="noreferrer"
+          aria-label="Castor on GitHub">
+          <i class="fa-brands fa-github" aria-hidden="true"></i>
+        </a>
+        <button class="theme-toggle" type="button" data-theme-toggle aria-label="Switch to dark theme"
+          aria-pressed="false">
+          <span class="theme-icon theme-icon-light" aria-hidden="true"><i class="fa-solid fa-moon"></i></span>
+          <span class="theme-icon theme-icon-dark" aria-hidden="true"><i class="fa-solid fa-sun"></i></span>
+        </button>
+      </div>
+    </nav>
+  </header>
+
+  <div class="docs-shell container">
+    <aside class="docs-sidebar" aria-label="Documentation navigation">
+      <p class="docs-sidebar-eyebrow">Documentation</p>
+
+      <nav class="docs-nav" aria-label="Documentation pages">
+        <a class="docs-nav-link" href="get-started.html">
+          <span>Get Started</span>
+        </a>
+        <a class="docs-nav-link" href="configuration.html">
+          <span>Configuration</span>
+        </a>
+        <span class="docs-nav-link is-disabled" aria-disabled="true">
+          <span>Middlewares</span>
+          <span class="docs-nav-badge">Soon</span>
+        </span>
+        <a class="docs-nav-link is-active" href="cookies.html" aria-current="page">
+          <span>Cookies</span>
+          <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
+        </a>
+        <span class="docs-nav-link is-disabled" aria-disabled="true">
+          <span>Static Assets</span>
+          <span class="docs-nav-badge">Soon</span>
+        </span>
+      </nav>
+
+      <div class="docs-sidebar-divider" role="presentation"></div>
+      <p class="docs-sidebar-eyebrow docs-sidebar-eyebrow-small">Full reference</p>
+      <nav class="docs-reference-links" aria-label="API reference">
+        <a href="https://github.com/castor-go/castor/blob/main/docs/castor.md" target="_blank" rel="noreferrer">
+          Core API
+          <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i>
+        </a>
+        <a href="https://github.com/castor-go/castor/blob/main/docs/middleware.md" target="_blank" rel="noreferrer">
+          Middlewares
+          <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i>
+        </a>
+      </nav>
+    </aside>
+
+    <main class="docs-content" id="main">
+      <header class="docs-hero">
+        <p class="eyebrow"><span class="eyebrow-dot" aria-hidden="true"></span> Cookies</p>
+        <h1>Cookie-based sessions<span class="hero-period">.</span></h1>
+        <p class="docs-lede">Build a small fake-auth flow with cookies. The first example keeps the session on the
+          server and stores only a token in the cookie. The second stores a signed user value directly in the
+          cookie.</p>
+
+        <ul class="docs-meta" aria-label="Guide details">
+          <li class="docs-pill"><i class="fa-solid fa-cookie-bite" aria-hidden="true"></i> 2 examples</li>
+          <li class="docs-pill"><i class="fa-solid fa-code" aria-hidden="true"></i> Go 1.27+</li>
+          <li class="docs-pill"><i class="fa-solid fa-shield-halved" aria-hidden="true"></i> HttpOnly</li>
+        </ul>
+      </header>
+
+      <section class="docs-section" id="defaults" aria-labelledby="defaults-title">
+        <h2 id="defaults-title">Shared cookie defaults</h2>
+        <p>The cookie helpers create a root-scoped, HTTP-only cookie that expires after two hours.</p>
+
+        <div class="docs-table-wrap">
+          <table class="docs-table">
+            <caption class="sr-only">Default attributes applied by SetCookie and SetSignedCookie</caption>
+            <thead>
+              <tr>
+                <th scope="col">Attribute</th>
+                <th scope="col">Value</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Path</td>
+                <td><code>/</code></td>
+              </tr>
+              <tr>
+                <td>HttpOnly</td>
+                <td><code>true</code>; JavaScript cannot read the cookie.</td>
+              </tr>
+              <tr>
+                <td>MaxAge</td>
+                <td><code>2h</code></td>
+              </tr>
+              <tr>
+                <td>Secure</td>
+                <td>Not set by the helper.</td>
+              </tr>
+              <tr>
+                <td>SameSite</td>
+                <td>Not set by the helper.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="docs-note">
+          <i class="fa-solid fa-circle-info" aria-hidden="true"></i>
+          <p>For production traffic, also set <code>Secure</code> and an appropriate <code>SameSite</code> value.
+            These helpers intentionally keep their defaults small; build an <code>http.Cookie</code> and call
+            <code>http.SetCookie</code> when you need extra attributes.</p>
+        </div>
+      </section>
+
+      <section class="docs-section" id="server-session" aria-labelledby="server-session-title">
+        <div class="docs-step-heading">
+          <span class="step-number" aria-hidden="true">1</span>
+          <h2 id="server-session-title">Session token with SetCookie</h2>
+        </div>
+        <p>This fake-auth example keeps users in an in-memory session store. The cookie carries only an opaque token,
+          and the profile handler reads it with <code>castor.GetCookie</code> before looking up the user.</p>
+
+        <div class="code-card docs-code-card">
+          <div class="code-toolbar">
+            <div class="traffic-lights" aria-hidden="true"><span></span><span></span><span></span></div>
+            <span class="code-filename">main.go</span>
+            <button class="copy-button" type="button" data-copy-target="#session-code" aria-label="Copy server session cookie example">
+              <span class="copy-default" aria-hidden="true"><i class="fa-regular fa-copy"></i><span
+                  class="copy-label">Copy</span></span>
+              <span class="copy-success" aria-hidden="true"><i class="fa-solid fa-check"></i><span
+                  class="copy-label">Copied</span></span>
+            </button>
+          </div>
+          <div class="code-body">
+            <pre class="code"><code id="session-code"><span class="tok-kw">package</span> main
+
+<span class="tok-kw">import</span> (
+	<span class="tok-str">"log"</span>
+	<span class="tok-str">"net/http"</span>
+	<span class="tok-str">"strings"</span>
+	<span class="tok-str">"sync"</span>
+
+	<span class="tok-str">"github.com/castor-go/castor"</span>
+)
+
+<span class="tok-comment">// Fake in-memory session store: token -&gt; user.</span>
+<span class="tok-kw">var</span> sessions <span class="tok-pkg">sync</span>.<span class="tok-type">Map</span>
+
+<span class="tok-kw">func</span> <span class="tok-fn">login</span>(res <span class="tok-pkg">http</span>.<span class="tok-type">ResponseWriter</span>, req *<span class="tok-pkg">http</span>.<span class="tok-type">Request</span>) {
+	user := <span class="tok-pkg">castor</span>.<span class="tok-fn">GetQueryParam</span>(req, <span class="tok-str">"user"</span>)
+	<span class="tok-kw">if</span> user == <span class="tok-str">""</span> {
+		<span class="tok-pkg">http</span>.<span class="tok-fn">Error</span>(res, <span class="tok-str">"user is required"</span>, <span class="tok-pkg">http</span>.<span class="tok-fn">StatusBadRequest</span>)
+		<span class="tok-kw">return</span>
+	}
+
+	token := <span class="tok-str">"session-"</span> + <span class="tok-pkg">strings</span>.<span class="tok-fn">ToLower</span>(user)
+	sessions.<span class="tok-fn">Store</span>(token, user)
+	<span class="tok-pkg">castor</span>.<span class="tok-fn">SetCookie</span>(res, <span class="tok-str">"session"</span>, token)
+
+	<span class="tok-pkg">castor</span>.<span class="tok-fn">Json</span>(res, <span class="tok-kw">map</span>[<span class="tok-kw">string</span>]<span class="tok-kw">string</span>{<span class="tok-str">"message"</span>: <span class="tok-str">"Signed in as "</span> + user})
+}
+
+<span class="tok-kw">func</span> <span class="tok-fn">profile</span>(res <span class="tok-pkg">http</span>.<span class="tok-type">ResponseWriter</span>, req *<span class="tok-pkg">http</span>.<span class="tok-type">Request</span>) {
+	token := <span class="tok-pkg">castor</span>.<span class="tok-fn">GetCookie</span>(req, <span class="tok-str">"session"</span>)
+	<span class="tok-kw">if</span> token == <span class="tok-str">""</span> {
+		<span class="tok-pkg">http</span>.<span class="tok-fn">Error</span>(res, <span class="tok-str">"not signed in"</span>, <span class="tok-pkg">http</span>.<span class="tok-fn">StatusUnauthorized</span>)
+		<span class="tok-kw">return</span>
+	}
+
+	value, ok := sessions.<span class="tok-fn">Load</span>(token)
+	<span class="tok-kw">if</span> !ok {
+		<span class="tok-pkg">http</span>.<span class="tok-fn">Error</span>(res, <span class="tok-str">"session expired"</span>, <span class="tok-pkg">http</span>.<span class="tok-fn">StatusUnauthorized</span>)
+		<span class="tok-kw">return</span>
+	}
+
+	<span class="tok-pkg">castor</span>.<span class="tok-fn">Json</span>(res, <span class="tok-kw">map</span>[<span class="tok-kw">string</span>]<span class="tok-kw">string</span>{<span class="tok-str">"user"</span>: value.(<span class="tok-kw">string</span>)})
+}
+
+<span class="tok-kw">func</span> <span class="tok-fn">logout</span>(res <span class="tok-pkg">http</span>.<span class="tok-type">ResponseWriter</span>, req *<span class="tok-pkg">http</span>.<span class="tok-type">Request</span>) {
+	<span class="tok-kw">if</span> token := <span class="tok-pkg">castor</span>.<span class="tok-fn">GetCookie</span>(req, <span class="tok-str">"session"</span>); token != <span class="tok-str">""</span> {
+		sessions.<span class="tok-fn">Delete</span>(token)
+	}
+	<span class="tok-pkg">castor</span>.<span class="tok-fn">RemoveCookie</span>(res, <span class="tok-str">"session"</span>)
+	res.<span class="tok-fn">WriteHeader</span>(<span class="tok-pkg">http</span>.<span class="tok-fn">StatusNoContent</span>)
+}
+
+<span class="tok-kw">func</span> <span class="tok-fn">main</span>() {
+	api := <span class="tok-pkg">castor</span>.<span class="tok-fn">Server</span>().<span class="tok-fn">Routes</span>(
+		<span class="tok-pkg">castor</span>.<span class="tok-fn">Get</span>(<span class="tok-str">"/login"</span>, login),
+		<span class="tok-pkg">castor</span>.<span class="tok-fn">Get</span>(<span class="tok-str">"/profile"</span>, profile),
+		<span class="tok-pkg">castor</span>.<span class="tok-fn">Post</span>(<span class="tok-str">"/logout"</span>, logout),
+	)
+
+	<span class="tok-kw">if</span> err := api.<span class="tok-fn">Start</span>(); err != <span class="tok-kw">nil</span> {
+		<span class="tok-pkg">log</span>.<span class="tok-fn">Fatal</span>(err)
+	}
+}</code></pre>
+          </div>
+          <div class="code-status">
+            <span class="status-dot" aria-hidden="true"></span>
+            <span>Listening on <strong>http://0.0.0.0:3000</strong></span>
+          </div>
+        </div>
+
+        <h3>Try it</h3>
+        <p>Log in to receive the cookie, then read the profile with the same cookie jar.</p>
+        <div class="code-card docs-code-card">
+          <div class="code-toolbar">
+            <div class="traffic-lights" aria-hidden="true"><span></span><span></span><span></span></div>
+            <span class="code-filename">terminal</span>
+            <button class="copy-button" type="button" data-copy-target="#session-curl" aria-label="Copy server session curl examples">
+              <span class="copy-default" aria-hidden="true"><i class="fa-regular fa-copy"></i><span
+                  class="copy-label">Copy</span></span>
+              <span class="copy-success" aria-hidden="true"><i class="fa-solid fa-check"></i><span
+                  class="copy-label">Copied</span></span>
+            </button>
+          </div>
+          <div class="code-body">
+            <pre class="code"><code id="session-curl">curl -c cookies.txt "http://127.0.0.1:3000/login?user=Ada"
+# {"message":"Signed in as Ada"}
+
+curl -b cookies.txt http://127.0.0.1:3000/profile
+# {"user":"Ada"}
+
+curl -b cookies.txt -X POST http://127.0.0.1:3000/logout
+# 204 No Content</code></pre>
+          </div>
+        </div>
+
+        <div class="docs-note">
+          <i class="fa-solid fa-lock" aria-hidden="true"></i>
+          <p>The cookie contains only a session token; the user data stays in the server-side store. Replace the
+            in-memory <code>sync.Map</code> with a shared store such as a database or Redis for real deployments, and
+            treat this login as a fake example rather than password authentication.</p>
+        </div>
+      </section>
+
+      <section class="docs-section" id="signed-cookie" aria-labelledby="signed-cookie-title">
+        <div class="docs-step-heading">
+          <span class="step-number" aria-hidden="true">2</span>
+          <h2 id="signed-cookie-title">Signed session with SetSignedCookie</h2>
+        </div>
+        <p>This version stores the user value in the cookie itself. <code>SetSignedCookie</code> signs the value with
+          HMAC-SHA256, and <code>GetSignedCookie</code> rejects missing, malformed, or tampered cookies.</p>
+
+        <div class="code-card docs-code-card">
+          <div class="code-toolbar">
+            <div class="traffic-lights" aria-hidden="true"><span></span><span></span><span></span></div>
+            <span class="code-filename">main.go</span>
+            <button class="copy-button" type="button" data-copy-target="#signed-code" aria-label="Copy signed cookie example">
+              <span class="copy-default" aria-hidden="true"><i class="fa-regular fa-copy"></i><span
+                  class="copy-label">Copy</span></span>
+              <span class="copy-success" aria-hidden="true"><i class="fa-solid fa-check"></i><span
+                  class="copy-label">Copied</span></span>
+            </button>
+          </div>
+          <div class="code-body">
+            <pre class="code"><code id="signed-code"><span class="tok-kw">package</span> main
+
+<span class="tok-kw">import</span> (
+	<span class="tok-str">"log"</span>
+	<span class="tok-str">"net/http"</span>
+
+	<span class="tok-str">"github.com/castor-go/castor"</span>
+)
+
+<span class="tok-comment">// In production, load this from the environment or a secret manager.</span>
+<span class="tok-kw">const</span> cookieSecret = <span class="tok-str">"replace-this-with-a-long-random-secret"</span>
+
+<span class="tok-kw">func</span> <span class="tok-fn">login</span>(res <span class="tok-pkg">http</span>.<span class="tok-type">ResponseWriter</span>, req *<span class="tok-pkg">http</span>.<span class="tok-type">Request</span>) {
+	user := <span class="tok-pkg">castor</span>.<span class="tok-fn">GetQueryParam</span>(req, <span class="tok-str">"user"</span>)
+	<span class="tok-kw">if</span> user == <span class="tok-str">""</span> {
+		<span class="tok-pkg">http</span>.<span class="tok-fn">Error</span>(res, <span class="tok-str">"user is required"</span>, <span class="tok-pkg">http</span>.<span class="tok-fn">StatusBadRequest</span>)
+		<span class="tok-kw">return</span>
+	}
+
+	<span class="tok-pkg">castor</span>.<span class="tok-fn">SetSignedCookie</span>(w, <span class="tok-str">"session"</span>, user, cookieSecret)
+	<span class="tok-pkg">castor</span>.<span class="tok-fn">Json</span>(res, <span class="tok-kw">map</span>[<span class="tok-kw">string</span>]<span class="tok-kw">string</span>{<span class="tok-str">"message"</span>: <span class="tok-str">"Signed in as "</span> + user})
+}
+
+<span class="tok-kw">func</span> <span class="tok-fn">profile</span>(res <span class="tok-pkg">http</span>.<span class="tok-type">ResponseWriter</span>, req *<span class="tok-pkg">http</span>.<span class="tok-type">Request</span>) {
+	user := <span class="tok-pkg">castor</span>.<span class="tok-fn">GetSignedCookie</span>(req, <span class="tok-str">"session"</span>, cookieSecret)
+	<span class="tok-kw">if</span> user == <span class="tok-str">""</span> {
+		<span class="tok-pkg">http</span>.<span class="tok-fn">Error</span>(res, <span class="tok-str">"not signed in"</span>, <span class="tok-pkg">http</span>.<span class="tok-fn">StatusUnauthorized</span>)
+		<span class="tok-kw">return</span>
+	}
+
+	<span class="tok-pkg">castor</span>.<span class="tok-fn">Json</span>(res, <span class="tok-kw">map</span>[<span class="tok-kw">string</span>]<span class="tok-kw">string</span>{<span class="tok-str">"user"</span>: user})
+}
+
+<span class="tok-kw">func</span> <span class="tok-fn">logout</span>(res <span class="tok-pkg">http</span>.<span class="tok-type">ResponseWriter</span>, req *<span class="tok-pkg">http</span>.<span class="tok-type">Request</span>) {
+	<span class="tok-pkg">castor</span>.<span class="tok-fn">RemoveCookie</span>(res, <span class="tok-str">"session"</span>)
+	res.<span class="tok-fn">WriteHeader</span>(<span class="tok-pkg">http</span>.<span class="tok-fn">StatusNoContent</span>)
+}
+
+<span class="tok-kw">func</span> <span class="tok-fn">main</span>() {
+	api := <span class="tok-pkg">castor</span>.<span class="tok-fn">Server</span>().<span class="tok-fn">Routes</span>(
+		<span class="tok-pkg">castor</span>.<span class="tok-fn">Get</span>(<span class="tok-str">"/login"</span>, login),
+		<span class="tok-pkg">castor</span>.<span class="tok-fn">Get</span>(<span class="tok-str">"/profile"</span>, profile),
+		<span class="tok-pkg">castor</span>.<span class="tok-fn">Post</span>(<span class="tok-str">"/logout"</span>, logout),
+	)
+
+	<span class="tok-kw">if</span> err := api.<span class="tok-fn">Start</span>(); err != <span class="tok-kw">nil</span> {
+		<span class="tok-pkg">log</span>.<span class="tok-fn">Fatal</span>(err)
+	}
+}</code></pre>
+          </div>
+          <div class="code-status">
+            <span class="status-dot" aria-hidden="true"></span>
+            <span>Listening on <strong>http://0.0.0.0:3000</strong></span>
+          </div>
+        </div>
+
+        <h3>Try it</h3>
+        <p>Use a separate cookie jar and verify that a modified cookie is rejected.</p>
+        <div class="code-card docs-code-card">
+          <div class="code-toolbar">
+            <div class="traffic-lights" aria-hidden="true"><span></span><span></span><span></span></div>
+            <span class="code-filename">terminal</span>
+            <button class="copy-button" type="button" data-copy-target="#signed-curl" aria-label="Copy signed cookie curl examples">
+              <span class="copy-default" aria-hidden="true"><i class="fa-regular fa-copy"></i><span
+                  class="copy-label">Copy</span></span>
+              <span class="copy-success" aria-hidden="true"><i class="fa-solid fa-check"></i><span
+                  class="copy-label">Copied</span></span>
+            </button>
+          </div>
+          <div class="code-body">
+            <pre class="code"><code id="signed-curl">curl -c signed-cookies.txt "http://127.0.0.1:3000/login?user=Ada"
+# {"message":"Signed in as Ada"}
+
+curl -b signed-cookies.txt http://127.0.0.1:3000/profile
+# {"user":"Ada"}
+
+curl --cookie "session=tampered.value" http://127.0.0.1:3000/profile
+# 401 Unauthorized</code></pre>
+          </div>
+        </div>
+
+        <div class="docs-note">
+          <i class="fa-solid fa-key" aria-hidden="true"></i>
+          <p>A signed cookie is readable but not modifiable: the value is signed with HMAC-SHA256, not encrypted.
+            Keep secrets out of the cookie, use a long random signing secret from the environment, and rotate it when
+            sessions need to be invalidated.</p>
+        </div>
+      </section>
+
+      <section class="docs-section" id="compare" aria-labelledby="compare-title">
+        <h2 id="compare-title">Which approach should I use?</h2>
+        <div class="docs-table-wrap">
+          <table class="docs-table">
+            <caption class="sr-only">Comparison of server-side sessions and signed cookies</caption>
+            <thead>
+              <tr>
+                <th scope="col">Consideration</th>
+                <th scope="col">Server-side session</th>
+                <th scope="col">Signed cookie</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Where state lives</td>
+                <td>Server-side map, database, or cache.</td>
+                <td>Inside the browser cookie.</td>
+              </tr>
+              <tr>
+                <td>What the cookie holds</td>
+                <td>An opaque session token.</td>
+                <td>A signed user value.</td>
+              </tr>
+              <tr>
+                <td>Logout and revocation</td>
+                <td>Delete the token from the store.</td>
+                <td>Remove the cookie; rotate the signing secret to revoke all sessions.</td>
+              </tr>
+              <tr>
+                <td>Scaling across servers</td>
+                <td>Needs a shared session store.</td>
+                <td>Stateless; every server needs the same secret.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="docs-callout">
+          <span class="docs-callout-icon" aria-hidden="true"><i class="fa-solid fa-compass"></i></span>
+          <div>
+            <h2>Start simple, then choose deliberately.</h2>
+            <p>Server-side sessions are easier to revoke. Signed cookies avoid a session store but must stay small and
+              must never contain secrets. Both examples are fake authentication; use real password hashing and HTTPS
+              in production.</p>
+          </div>
+        </div>
+
+        <div class="docs-actions">
+          <a class="button button-primary" href="https://github.com/castor-go/castor/blob/main/docs/castor.md"
+            target="_blank" rel="noreferrer">
+            Core API reference
+            <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i>
+          </a>
+          <a class="button button-ghost" href="configuration.html">
+            Back to Configuration
+          </a>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <a class="brand footer-brand" href="index.html" aria-label="Castor home">
+        <img class="brand-mark" src="assets/castor-mark.svg" width="30" height="30" alt="">
+        <span class="brand-name">Castor</span>
+      </a>
+      <p class="footer-note"><span class="footer-dot" aria-hidden="true"></span> Released under the MIT License</p>
+      <div class="footer-links">
+        <a href="https://github.com/castor-go/castor" target="_blank" rel="noreferrer">GitHub</a>
+        <a href="#main">Back to top <i class="fa-solid fa-arrow-up" aria-hidden="true"></i></a>
+      </div>
+    </div>
+  </footer>
+
+  <p class="sr-only" id="copy-status" role="status" aria-live="polite"></p>
+  <script src="main.js"></script>
+</body>
+
+</html>
