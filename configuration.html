@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Configuration — Castor Docs</title>
+  <meta name="description"
+    content="Configure a Castor server: use the defaults, override individual settings with helpers, or provide a complete ServerConfig.">
+  <meta name="theme-color" content="#E8DCCF">
+  <link rel="icon" type="image/svg+xml" href="assets/castor-mark.svg">
+  <script>
+    (() => {
+      const saved = (() => {
+        try { return localStorage.getItem('castor-theme'); } catch { return null; }
+      })();
+      const theme = saved === 'light' || saved === 'dark'
+        ? saved
+        : (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+      document.documentElement.dataset.theme = theme;
+    })();
+  </script>
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+    crossorigin="anonymous" referrerpolicy="no-referrer">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="docs.css">
+</head>
+
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="site-header">
+    <nav class="nav container" aria-label="Main navigation">
+      <a class="brand" href="index.html" aria-label="Castor home">
+        <img class="brand-mark" src="assets/castor-mark.svg" width="40" height="40" alt="">
+        <span class="brand-name">Castor</span>
+        <span class="brand-badge">Docs</span>
+      </a>
+
+      <div class="nav-links docs-top-nav">
+        <a href="get-started.html">Documentation</a>
+        <a href="https://github.com/castor-go/castor" target="_blank" rel="noreferrer">GitHub</a>
+      </div>
+
+      <div class="nav-actions">
+        <a class="nav-github" href="https://github.com/castor-go/castor" target="_blank" rel="noreferrer"
+          aria-label="Castor on GitHub">
+          <i class="fa-brands fa-github" aria-hidden="true"></i>
+        </a>
+        <button class="theme-toggle" type="button" data-theme-toggle aria-label="Switch to dark theme"
+          aria-pressed="false">
+          <span class="theme-icon theme-icon-light" aria-hidden="true"><i class="fa-solid fa-moon"></i></span>
+          <span class="theme-icon theme-icon-dark" aria-hidden="true"><i class="fa-solid fa-sun"></i></span>
+        </button>
+      </div>
+    </nav>
+  </header>
+
+  <div class="docs-shell container">
+    <aside class="docs-sidebar" aria-label="Documentation navigation">
+      <p class="docs-sidebar-eyebrow">Documentation</p>
+
+      <nav class="docs-nav" aria-label="Documentation pages">
+        <a class="docs-nav-link" href="get-started.html">
+          <span>Get Started</span>
+        </a>
+        <a class="docs-nav-link is-active" href="configuration.html" aria-current="page">
+          <span>Configuration</span>
+          <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
+        </a>
+        <span class="docs-nav-link is-disabled" aria-disabled="true">
+          <span>Middlewares</span>
+          <span class="docs-nav-badge">Soon</span>
+        </span>
+        <span class="docs-nav-link is-disabled" aria-disabled="true">
+          <span>Cookies</span>
+          <span class="docs-nav-badge">Soon</span>
+        </span>
+      </nav>
+
+      <div class="docs-sidebar-divider" role="presentation"></div>
+      <p class="docs-sidebar-eyebrow docs-sidebar-eyebrow-small">Full reference</p>
+      <nav class="docs-reference-links" aria-label="API reference">
+        <a href="https://github.com/castor-go/castor/blob/main/docs/castor.md" target="_blank" rel="noreferrer">
+          Core API
+          <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i>
+        </a>
+        <a href="https://github.com/castor-go/castor/blob/main/docs/middleware.md" target="_blank" rel="noreferrer">
+          Middlewares
+          <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i>
+        </a>
+      </nav>
+    </aside>
+
+    <main class="docs-content" id="main">
+      <header class="docs-hero">
+        <p class="eyebrow"><span class="eyebrow-dot" aria-hidden="true"></span> Configuration</p>
+        <h1>Configure the server<span class="hero-period">.</span></h1>
+        <p class="docs-lede">Castor runs with sensible defaults and no configuration at all. When you need more
+          control, start with the defaults, override a few values with helper options, or supply the complete
+          <code>ServerConfig</code>.</p>
+
+        <ul class="docs-meta" aria-label="Guide details">
+          <li class="docs-pill"><i class="fa-solid fa-sliders" aria-hidden="true"></i> 3 scenarios</li>
+          <li class="docs-pill"><i class="fa-solid fa-code" aria-hidden="true"></i> Go 1.27+</li>
+          <li class="docs-pill"><i class="fa-solid fa-feather" aria-hidden="true"></i> Standard library only</li>
+        </ul>
+      </header>
+
+      <section class="docs-section" id="defaults" aria-labelledby="defaults-title">
+        <div class="docs-step-heading">
+          <span class="step-number" aria-hidden="true">1</span>
+          <h2 id="defaults-title">Use the defaults</h2>
+        </div>
+        <p>Call <code>castor.Server()</code> without options. The server listens on all interfaces at port
+          <code>3000</code>, installs request logging, and starts with the defaults shown below.</p>
+
+        <div class="code-card docs-code-card">
+          <div class="code-toolbar">
+            <div class="traffic-lights" aria-hidden="true"><span></span><span></span><span></span></div>
+            <span class="code-filename">main.go</span>
+            <button class="copy-button" type="button" data-copy-target="#default-code" aria-label="Copy default setup code">
+              <span class="copy-default" aria-hidden="true"><i class="fa-regular fa-copy"></i><span
+                  class="copy-label">Copy</span></span>
+              <span class="copy-success" aria-hidden="true"><i class="fa-solid fa-check"></i><span
+                  class="copy-label">Copied</span></span>
+            </button>
+          </div>
+          <div class="code-body">
+            <pre class="code"><code id="default-code"><span class="tok-kw">package</span> main
+
+<span class="tok-kw">import</span> (
+	<span class="tok-str">"log"</span>
+	<span class="tok-str">"net/http"</span>
+
+	<span class="tok-str">"github.com/castor-go/castor"</span>
+)
+
+<span class="tok-kw">func</span> <span class="tok-fn">main</span>() {
+	api := <span class="tok-pkg">castor</span>.<span class="tok-fn">Server</span>()
+
+	api.<span class="tok-fn">Routes</span>(
+		<span class="tok-pkg">castor</span>.<span class="tok-fn">Get</span>(<span class="tok-str">"/health"</span>, <span class="tok-kw">func</span>(res <span class="tok-pkg">http</span>.<span class="tok-type">ResponseWriter</span>, req *<span class="tok-pkg">http</span>.<span class="tok-type">Request</span>) {
+			<span class="tok-pkg">castor</span>.<span class="tok-fn">Json</span>(res, <span class="tok-kw">map</span>[<span class="tok-kw">string</span>]<span class="tok-kw">string</span>{<span class="tok-str">"status"</span>: <span class="tok-str">"ok"</span>})
+		}),
+	)
+
+	<span class="tok-kw">if</span> err := api.<span class="tok-fn">Start</span>(); err != <span class="tok-kw">nil</span> {
+		<span class="tok-pkg">log</span>.<span class="tok-fn">Fatal</span>(err)
+	}
+}</code></pre>
+          </div>
+          <div class="code-status">
+            <span class="status-dot" aria-hidden="true"></span>
+            <span>Listening on <strong>http://0.0.0.0:3000</strong></span>
+          </div>
+        </div>
+
+        <h3>Default parameters</h3>
+        <div class="docs-table-wrap">
+          <table class="docs-table">
+            <caption class="sr-only">Default Castor server settings</caption>
+            <thead>
+              <tr>
+                <th scope="col">Setting</th>
+                <th scope="col">Default</th>
+                <th scope="col">Notes</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Host</td>
+                <td><code>0.0.0.0</code></td>
+                <td>Listens on all available IPv4 interfaces.</td>
+              </tr>
+              <tr>
+                <td>Port</td>
+                <td><code>3000</code></td>
+                <td>The HTTP port used by <code>Start</code>.</td>
+              </tr>
+              <tr>
+                <td>IdleTimeout</td>
+                <td><code>10s</code></td>
+                <td>Maximum time a keep-alive connection may sit idle.</td>
+              </tr>
+              <tr>
+                <td>ReadTimeout</td>
+                <td><code>0</code></td>
+                <td>No read deadline; <code>net/http</code> waits for the request.</td>
+              </tr>
+              <tr>
+                <td>WriteTimeout</td>
+                <td><code>0</code></td>
+                <td>No write deadline; the handler decides when to finish.</td>
+              </tr>
+              <tr>
+                <td>Logger field</td>
+                <td><code>nil</code></td>
+                <td>Stored on the configuration; it does not install logging middleware by itself.</td>
+              </tr>
+              <tr>
+                <td>Request logging</td>
+                <td>Enabled</td>
+                <td>The <code>Logger</code> middleware is installed automatically and uses <code>DefaultLogger</code>.</td>
+              </tr>
+              <tr>
+                <td>Shutdown grace period</td>
+                <td><code>10s</code></td>
+                <td>Internal timeout after <code>SIGINT</code> or <code>SIGTERM</code>.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="docs-note">
+          <i class="fa-solid fa-circle-info" aria-hidden="true"></i>
+          <p>A zero read or write timeout means <strong>no timeout</strong>, not an immediate failure. Set explicit
+            limits when the server is exposed to slow or untrusted clients.</p>
+        </div>
+      </section>
+
+      <section class="docs-section" id="helpers" aria-labelledby="helpers-title">
+        <div class="docs-step-heading">
+          <span class="step-number" aria-hidden="true">2</span>
+          <h2 id="helpers-title">Override a few settings</h2>
+        </div>
+        <p>Use the configuration helpers to change individual values while keeping the rest of the defaults.
+          Options are applied in the order you pass them.</p>
+
+        <div class="code-card docs-code-card">
+          <div class="code-toolbar">
+            <div class="traffic-lights" aria-hidden="true"><span></span><span></span><span></span></div>
+            <span class="code-filename">main.go</span>
+            <button class="copy-button" type="button" data-copy-target="#helpers-code" aria-label="Copy helper configuration code">
+              <span class="copy-default" aria-hidden="true"><i class="fa-regular fa-copy"></i><span
+                  class="copy-label">Copy</span></span>
+              <span class="copy-success" aria-hidden="true"><i class="fa-solid fa-check"></i><span
+                  class="copy-label">Copied</span></span>
+            </button>
+          </div>
+          <div class="code-body">
+            <pre class="code"><code id="helpers-code"><span class="tok-kw">package</span> main
+
+<span class="tok-kw">import</span> (
+	<span class="tok-str">"log"</span>
+	<span class="tok-str">"log/slog"</span>
+	<span class="tok-str">"net/http"</span>
+	<span class="tok-str">"os"</span>
+
+	<span class="tok-str">"github.com/castor-go/castor"</span>
+)
+
+<span class="tok-kw">func</span> <span class="tok-fn">main</span>() {
+	logger := <span class="tok-pkg">slog</span>.<span class="tok-fn">New</span>(<span class="tok-pkg">slog</span>.<span class="tok-fn">NewJSONHandler</span>(<span class="tok-pkg">os</span>.<span class="tok-fn">Stdout</span>, <span class="tok-kw">nil</span>))
+
+	<span class="tok-pkg">castor</span>.<span class="tok-fn">DefaultLogger</span> = <span class="tok-pkg">castor</span>.<span class="tok-fn">RequestLogger</span>(&amp;<span class="tok-pkg">castor</span>.<span class="tok-fn">DefaultLogFormatter</span>{
+		<span class="tok-fn">Logger</span>: logger,
+	})
+
+	api := <span class="tok-pkg">castor</span>.<span class="tok-fn">Server</span>(
+		<span class="tok-pkg">castor</span>.<span class="tok-fn">WithHost</span>(<span class="tok-str">"127.0.0.1"</span>),
+		<span class="tok-pkg">castor</span>.<span class="tok-fn">WithPort</span>(8080),
+		<span class="tok-pkg">castor</span>.<span class="tok-fn">WithLogger</span>(logger),
+	)
+
+	api.<span class="tok-fn">Routes</span>(
+		<span class="tok-pkg">castor</span>.<span class="tok-fn">Get</span>(<span class="tok-str">"/health"</span>, <span class="tok-kw">func</span>(res <span class="tok-pkg">http</span>.<span class="tok-type">ResponseWriter</span>, req *<span class="tok-pkg">http</span>.<span class="tok-type">Request</span>) {
+			<span class="tok-pkg">castor</span>.<span class="tok-fn">Json</span>(res, <span class="tok-kw">map</span>[<span class="tok-kw">string</span>]<span class="tok-kw">string</span>{<span class="tok-str">"status"</span>: <span class="tok-str">"ok"</span>})
+		}),
+	)
+
+	<span class="tok-kw">if</span> err := api.<span class="tok-fn">Start</span>(); err != <span class="tok-kw">nil</span> {
+		<span class="tok-pkg">log</span>.<span class="tok-fn">Fatal</span>(err)
+	}
+}</code></pre>
+          </div>
+        </div>
+
+        <div class="docs-helpers">
+          <div class="docs-helper">
+            <code>WithHost(addr)</code>
+            <p>Sets the listen address. Other defaults, including the 10s idle timeout, stay in place.</p>
+          </div>
+          <div class="docs-helper">
+            <code>WithPort(port)</code>
+            <p>Sets the HTTP port while keeping the default host and timeouts.</p>
+          </div>
+          <div class="docs-helper">
+            <code>WithLogger(logger)</code>
+            <p>Stores the logger on <code>ServerConfig</code>. Request logging is separately controlled through
+              <code>DefaultLogger</code>.</p>
+          </div>
+        </div>
+
+        <div class="docs-note">
+          <i class="fa-solid fa-circle-info" aria-hidden="true"></i>
+          <p>The built-in request logger is the <code>Logger</code> middleware, which delegates to
+            <strong>castor.DefaultLogger</strong>. Assigning <code>DefaultLogger</code> to a
+            <code>RequestLogger</code> with your logger, as in the example, sends request logs through that logger.
+            <code>WithLogger</code> keeps the logger on the server configuration.</p>
+        </div>
+      </section>
+
+      <section class="docs-section" id="full-config" aria-labelledby="full-config-title">
+        <div class="docs-step-heading">
+          <span class="step-number" aria-hidden="true">3</span>
+          <h2 id="full-config-title">Provide the full configuration</h2>
+        </div>
+        <p>Use <code>castor.Config</code> with a complete <code>ServerConfig</code> when you need to control every
+          HTTP setting in one place.</p>
+
+        <div class="code-card docs-code-card">
+          <div class="code-toolbar">
+            <div class="traffic-lights" aria-hidden="true"><span></span><span></span><span></span></div>
+            <span class="code-filename">main.go</span>
+            <button class="copy-button" type="button" data-copy-target="#full-code" aria-label="Copy full configuration code">
+              <span class="copy-default" aria-hidden="true"><i class="fa-regular fa-copy"></i><span
+                  class="copy-label">Copy</span></span>
+              <span class="copy-success" aria-hidden="true"><i class="fa-solid fa-check"></i><span
+                  class="copy-label">Copied</span></span>
+            </button>
+          </div>
+          <div class="code-body">
+            <pre class="code"><code id="full-code"><span class="tok-kw">package</span> main
+
+<span class="tok-kw">import</span> (
+	<span class="tok-str">"log"</span>
+	<span class="tok-str">"log/slog"</span>
+	<span class="tok-str">"net/http"</span>
+	<span class="tok-str">"os"</span>
+	<span class="tok-str">"time"</span>
+
+	<span class="tok-str">"github.com/castor-go/castor"</span>
+)
+
+<span class="tok-kw">func</span> <span class="tok-fn">main</span>() {
+	logger := <span class="tok-pkg">slog</span>.<span class="tok-fn">New</span>(<span class="tok-pkg">slog</span>.<span class="tok-fn">NewJSONHandler</span>(<span class="tok-pkg">os</span>.<span class="tok-fn">Stdout</span>, <span class="tok-kw">nil</span>))
+
+	<span class="tok-pkg">castor</span>.<span class="tok-fn">DefaultLogger</span> = <span class="tok-pkg">castor</span>.<span class="tok-fn">RequestLogger</span>(&amp;<span class="tok-pkg">castor</span>.<span class="tok-fn">DefaultLogFormatter</span>{
+		<span class="tok-fn">Logger</span>: logger,
+	})
+
+	api := <span class="tok-pkg">castor</span>.<span class="tok-fn">Server</span>(<span class="tok-pkg">castor</span>.<span class="tok-fn">Config</span>(<span class="tok-pkg">castor</span>.<span class="tok-type">ServerConfig</span>{
+		<span class="tok-fn">Host</span>:         <span class="tok-str">"127.0.0.1"</span>,
+		<span class="tok-fn">Port</span>:         8080,
+		<span class="tok-fn">Logger</span>:       logger,
+		<span class="tok-fn">IdleTimeout</span>:  <span class="tok-str">2</span> * <span class="tok-pkg">time</span>.<span class="tok-fn">Minute</span>,
+		<span class="tok-fn">ReadTimeout</span>:  <span class="tok-str">5</span> * <span class="tok-pkg">time</span>.<span class="tok-fn">Second</span>,
+		<span class="tok-fn">WriteTimeout</span>: <span class="tok-str">15</span> * <span class="tok-pkg">time</span>.<span class="tok-fn">Second</span>,
+	}))
+
+	api.<span class="tok-fn">Routes</span>(
+		<span class="tok-pkg">castor</span>.<span class="tok-fn">Get</span>(<span class="tok-str">"/health"</span>, <span class="tok-kw">func</span>(res <span class="tok-pkg">http</span>.<span class="tok-type">ResponseWriter</span>, req *<span class="tok-pkg">http</span>.<span class="tok-type">Request</span>) {
+			<span class="tok-pkg">castor</span>.<span class="tok-fn">Json</span>(res, <span class="tok-kw">map</span>[<span class="tok-kw">string</span>]<span class="tok-kw">string</span>{<span class="tok-str">"status"</span>: <span class="tok-str">"ok"</span>})
+		}),
+	)
+
+	<span class="tok-kw">if</span> err := api.<span class="tok-fn">Start</span>(); err != <span class="tok-kw">nil</span> {
+		<span class="tok-pkg">log</span>.<span class="tok-fn">Fatal</span>(err)
+	}
+}</code></pre>
+          </div>
+        </div>
+
+        <h3>What each field controls</h3>
+        <div class="docs-table-wrap">
+          <table class="docs-table">
+            <caption class="sr-only">ServerConfig fields</caption>
+            <thead>
+              <tr>
+                <th scope="col">Field</th>
+                <th scope="col">Purpose</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Host</td>
+                <td>Interface passed to the TCP listener.</td>
+              </tr>
+              <tr>
+                <td>Port</td>
+                <td>TCP port used by the listener.</td>
+              </tr>
+              <tr>
+                <td>Logger</td>
+                <td>Logger stored on the configuration; request logging is wired through <code>DefaultLogger</code>.</td>
+              </tr>
+              <tr>
+                <td>IdleTimeout</td>
+                <td>Keep-alive idle deadline. The server default is 10s, but <code>Config</code> replaces it.</td>
+              </tr>
+              <tr>
+                <td>ReadTimeout</td>
+                <td>Deadline for reading the request, including the body.</td>
+              </tr>
+              <tr>
+                <td>WriteTimeout</td>
+                <td>Deadline for writing the response.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="docs-note">
+          <i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i>
+          <p><code>Config</code> replaces the entire configuration, so omitted fields become zero values. In
+            particular, a zero <code>IdleTimeout</code> removes the 10-second default. Set every field you need to
+            keep.</p>
+        </div>
+
+        <h3>Mixing helpers with Config</h3>
+        <p>Options are applied in order, so a helper passed after <code>Config</code> can override one field. For
+          example, <code>castor.Server(castor.Config(base), castor.WithPort(9090))</code> uses port 9090 because the
+          helper runs after the full configuration.</p>
+
+        <div class="docs-callout">
+          <span class="docs-callout-icon" aria-hidden="true"><i class="fa-solid fa-compass"></i></span>
+          <div>
+            <h2>Which approach fits?</h2>
+            <p>Use no configuration for prototypes and local services. Use helpers when a few values differ from the
+              defaults. Use <code>Config</code> when you need explicit read, write, and idle timeouts in one place.</p>
+          </div>
+        </div>
+
+        <div class="docs-actions">
+          <a class="button button-primary" href="https://github.com/castor-go/castor/blob/main/docs/castor.md"
+            target="_blank" rel="noreferrer">
+            Core API reference
+            <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i>
+          </a>
+          <a class="button button-ghost" href="get-started.html">
+            Back to Get Started
+          </a>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <a class="brand footer-brand" href="index.html" aria-label="Castor home">
+        <img class="brand-mark" src="assets/castor-mark.svg" width="30" height="30" alt="">
+        <span class="brand-name">Castor</span>
+      </a>
+      <p class="footer-note"><span class="footer-dot" aria-hidden="true"></span> Released under the MIT License</p>
+      <div class="footer-links">
+        <a href="https://github.com/castor-go/castor" target="_blank" rel="noreferrer">GitHub</a>
+        <a href="#main">Back to top <i class="fa-solid fa-arrow-up" aria-hidden="true"></i></a>
+      </div>
+    </div>
+  </footer>
+
+  <p class="sr-only" id="copy-status" role="status" aria-live="polite"></p>
+  <script src="main.js"></script>
+</body>
+
+</html>
