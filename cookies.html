@@ -556,23 +556,8 @@ curl --cookie "session=tampered.value" http://127.0.0.1:3000/profile
 	)
 }
 
-<span class="tok-kw">func</span> <span class="tok-fn">readFlash</span>(w <span class="tok-pkg">http</span>.<span class="tok-type">ResponseWriter</span>, r *<span class="tok-pkg">http</span>.<span class="tok-type">Request</span>) []<span class="tok-pkg">castor</span>.<span class="tok-type">FlashMessage</span> {
-	raw := <span class="tok-pkg">castor</span>.<span class="tok-fn">GetCookie</span>(r, <span class="tok-str">"WG_FLASH"</span>)
-	<span class="tok-kw">if</span> raw == <span class="tok-str">""</span> {
-		<span class="tok-kw">return</span> <span class="tok-kw">nil</span>
-	}
-
-	value, err := <span class="tok-pkg">url</span>.<span class="tok-fn">QueryUnescape</span>(raw)
-	<span class="tok-kw">if</span> err != <span class="tok-kw">nil</span> {
-		<span class="tok-kw">return</span> <span class="tok-kw">nil</span>
-	}
-
-	<span class="tok-kw">var</span> messages []<span class="tok-pkg">castor</span>.<span class="tok-type">FlashMessage</span>
-	<span class="tok-kw">if</span> err := <span class="tok-pkg">json</span>.<span class="tok-fn">Unmarshal</span>([]<span class="tok-kw">byte</span>(value), &amp;messages); err != <span class="tok-kw">nil</span> {
-		<span class="tok-kw">return</span> <span class="tok-kw">nil</span>
-	}
-
-	<span class="tok-pkg">castor</span>.<span class="tok-fn">RemoveCookie</span>(w, <span class="tok-str">"WG_FLASH"</span>)
+<span class="tok-kw">func</span> <span class="tok-fn">readFlash</span>(res <span class="tok-pkg">http</span>.<span class="tok-type">ResponseWriter</span>, req *<span class="tok-pkg">http</span>.<span class="tok-type">Request</span>) []<span class="tok-pkg">castor</span>.<span class="tok-type">FlashMessage</span> {
+	messages := <span class="tok-pkg">castor</span>.<span class="tok-fn">ReadFlashMessages</span>(req)
 	<span class="tok-kw">return</span> messages
 }</code></pre>
           </div>
