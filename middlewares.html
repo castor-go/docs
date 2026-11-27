@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Middlewares — Castor Docs</title>
+  <meta name="description"
+    content="Create custom middleware with Castor's plain func(http.Handler) http.Handler API and browse the built-in middleware collection.">
+  <meta name="theme-color" content="#E8DCCF">
+  <link rel="icon" type="image/svg+xml" href="assets/castor-mark.svg">
+  <script>
+    (() => {
+      const saved = (() => {
+        try { return localStorage.getItem('castor-theme'); } catch { return null; }
+      })();
+      const theme = saved === 'light' || saved === 'dark'
+        ? saved
+        : (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+      document.documentElement.dataset.theme = theme;
+    })();
+  </script>
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+    crossorigin="anonymous" referrerpolicy="no-referrer">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="docs.css">
+  <style>
+    .tok-comment {
+      color: var(--code-muted);
+      font-style: italic;
+    }
+  </style>
+</head>
+
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="site-header">
+    <nav class="nav container" aria-label="Main navigation">
+      <a class="brand" href="index.html" aria-label="Castor home">
+        <img class="brand-mark" src="assets/castor-mark.svg" width="40" height="40" alt="">
+        <span class="brand-name">Castor</span>
+        <span class="brand-badge">Docs</span>
+      </a>
+
+      <div class="nav-links docs-top-nav">
+        <a href="get-started.html">Documentation</a>
+        <a href="https://github.com/castor-go/castor" target="_blank" rel="noreferrer">GitHub</a>
+      </div>
+
+      <div class="nav-actions">
+        <a class="nav-github" href="https://github.com/castor-go/castor" target="_blank" rel="noreferrer"
+          aria-label="Castor on GitHub">
+          <i class="fa-brands fa-github" aria-hidden="true"></i>
+        </a>
+        <button class="theme-toggle" type="button" data-theme-toggle aria-label="Switch to dark theme"
+          aria-pressed="false">
+          <span class="theme-icon theme-icon-light" aria-hidden="true"><i class="fa-solid fa-moon"></i></span>
+          <span class="theme-icon theme-icon-dark" aria-hidden="true"><i class="fa-solid fa-sun"></i></span>
+        </button>
+      </div>
+    </nav>
+  </header>
+
+  <div class="docs-shell container">
+    <aside class="docs-sidebar" aria-label="Documentation navigation">
+      <p class="docs-sidebar-eyebrow">Documentation</p>
+
+      <nav class="docs-nav" aria-label="Documentation pages">
+        <a class="docs-nav-link" href="get-started.html">
+          <span>Get Started</span>
+        </a>
+        <a class="docs-nav-link" href="configuration.html">
+          <span>Configuration</span>
+        </a>
+        <a class="docs-nav-link" href="cookies.html">
+          <span>Cookies</span>
+        </a>
+        <a class="docs-nav-link is-active" href="middlewares.html" aria-current="page">
+          <span>Middlewares</span>
+          <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
+        </a>
+        <a class="docs-nav-link" href="static-assets.html">
+          <span>Static Assets</span>
+        </a>
+      </nav>
+
+      <div class="docs-sidebar-divider" role="presentation"></div>
+      <p class="docs-sidebar-eyebrow docs-sidebar-eyebrow-small">Full reference</p>
+      <nav class="docs-reference-links" aria-label="API reference">
+        <a href="https://github.com/castor-go/castor/blob/main/docs/castor.md" target="_blank" rel="noreferrer">
+          Core API
+          <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i>
+        </a>
+        <a href="https://github.com/castor-go/castor/blob/main/docs/middleware.md" target="_blank" rel="noreferrer">
+          Middlewares
+          <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i>
+        </a>
+      </nav>
+    </aside>
+
+    <main class="docs-content" id="main">
+      <header class="docs-hero">
+        <p class="eyebrow"><span class="eyebrow-dot" aria-hidden="true"></span> Middlewares</p>
+        <h1>Middleware in plain functions<span class="hero-period">.</span></h1>
+        <p class="docs-lede">Castor middleware is a function that wraps an <code>http.Handler</code>. Write one with the
+          standard library, apply it globally or to a route, and keep the same composable API as the built-in
+          middleware.</p>
+
+        <ul class="docs-meta" aria-label="Guide details">
+          <li class="docs-pill"><i class="fa-solid fa-cubes" aria-hidden="true"></i> Plain Go</li>
+          <li class="docs-pill"><i class="fa-solid fa-code" aria-hidden="true"></i> Go 1.27+</li>
+          <li class="docs-pill"><i class="fa-solid fa-feather" aria-hidden="true"></i> Standard library</li>
+        </ul>
+      </header>
+
+      <section class="docs-section" id="create" aria-labelledby="create-title">
+        <div class="docs-step-heading">
+          <span class="step-number" aria-hidden="true">1</span>
+          <h2 id="create-title">Create a middleware</h2>
+        </div>
+        <p>A middleware accepts the next handler and returns a new handler. Call <code>next.ServeHTTP</code> to
+          continue the chain. This example logs how long each request takes:</p>
+
+        <div class="code-card docs-code-card">
+          <div class="code-toolbar">
+            <div class="traffic-lights" aria-hidden="true"><span></span><span></span><span></span></div>
+            <span class="code-filename">main.go</span>
+            <button class="copy-button" type="button" data-copy-target="#custom-code" aria-label="Copy custom middleware example">
+              <span class="copy-default" aria-hidden="true"><i class="fa-regular fa-copy"></i><span
+                  class="copy-label">Copy</span></span>
+              <span class="copy-success" aria-hidden="true"><i class="fa-solid fa-check"></i><span
+                  class="copy-label">Copied</span></span>
+            </button>
+          </div>
+          <div class="code-body">
+            <pre class="code"><code id="custom-code"><span class="tok-kw">package</span> main
+
+<span class="tok-kw">import</span> (
+	<span class="tok-str">"log"</span>
+	<span class="tok-str">"net/http"</span>
+	<span class="tok-str">"time"</span>
+
+	<span class="tok-str">"github.com/castor-go/castor"</span>
+)
+
+<span class="tok-kw">func</span> <span class="tok-fn">requestTimer</span>(next <span class="tok-pkg">http</span>.<span class="tok-type">Handler</span>) <span class="tok-pkg">http</span>.<span class="tok-type">Handler</span> {
+	<span class="tok-kw">return</span> <span class="tok-pkg">http</span>.<span class="tok-fn">HandlerFunc</span>(<span class="tok-kw">func</span>(res <span class="tok-pkg">http</span>.<span class="tok-type">ResponseWriter</span>, req *<span class="tok-pkg">http</span>.<span class="tok-type">Request</span>) {
+		start := <span class="tok-pkg">time</span>.<span class="tok-fn">Now</span>()
+		next.<span class="tok-fn">ServeHTTP</span>(res, req)
+		<span class="tok-pkg">log</span>.<span class="tok-fn">Printf</span>(<span class="tok-str">"%s %s took %s"</span>, req.Method, req.URL.Path, <span class="tok-pkg">time</span>.<span class="tok-fn">Since</span>(start))
+	})
+}
+
+<span class="tok-kw">func</span> <span class="tok-fn">main</span>() {
+	server := <span class="tok-pkg">castor</span>.<span class="tok-fn">Server</span>().
+		<span class="tok-fn">Middlewares</span>(requestTimer).
+		<span class="tok-fn">Routes</span>(
+			<span class="tok-pkg">castor</span>.<span class="tok-fn">Get</span>(<span class="tok-str">"/"</span>, <span class="tok-kw">func</span>(res <span class="tok-pkg">http</span>.<span class="tok-type">ResponseWriter</span>, req *<span class="tok-pkg">http</span>.<span class="tok-type">Request</span>) {
+				<span class="tok-pkg">castor</span>.<span class="tok-fn">Json</span>(res, <span class="tok-kw">map</span>[<span class="tok-kw">string</span>]<span class="tok-kw">string</span>{<span class="tok-str">"message"</span>: <span class="tok-str">"Hello"</span>})
+			}),
+		)
+
+	<span class="tok-kw">if</span> err := server.<span class="tok-fn">Start</span>(); err != <span class="tok-kw">nil</span> {
+		<span class="tok-pkg">log</span>.<span class="tok-fn">Fatal</span>(err)
+	}
+}</code></pre>
+          </div>
+        </div>
+        <p class="docs-code-note">Any func(http.Handler) http.Handler works; castor.Middleware is an alias for that signature.</p>
+      </section>
+
+      <section class="docs-section" id="integrate" aria-labelledby="integrate-title">
+        <div class="docs-step-heading">
+          <span class="step-number" aria-hidden="true">2</span>
+          <h2 id="integrate-title">Integrate the middleware</h2>
+        </div>
+        <p>Apply custom middleware globally, to one route, or to a route group. The first middleware in a list is
+          the outermost and runs first.</p>
+
+        <div class="code-card docs-code-card">
+          <div class="code-toolbar">
+            <div class="traffic-lights" aria-hidden="true"><span></span><span></span><span></span></div>
+            <span class="code-filename">main.go</span>
+            <button class="copy-button" type="button" data-copy-target="#integrate-code" aria-label="Copy middleware integration examples">
+              <span class="copy-default" aria-hidden="true"><i class="fa-regular fa-copy"></i><span
+                  class="copy-label">Copy</span></span>
+              <span class="copy-success" aria-hidden="true"><i class="fa-solid fa-check"></i><span
+                  class="copy-label">Copied</span></span>
+            </button>
+          </div>
+          <div class="code-body">
+            <pre class="code"><code id="integrate-code"><span class="tok-comment">// Global: runs for every request, including unmatched routes.</span>
+server := <span class="tok-pkg">castor</span>.<span class="tok-fn">Server</span>().<span class="tok-fn">Middlewares</span>(requestTimer)
+
+<span class="tok-comment">// Route: runs only when this route matches.</span>
+server.<span class="tok-fn">Routes</span>(
+	<span class="tok-pkg">castor</span>.<span class="tok-fn">Get</span>(<span class="tok-str">"/admin"</span>, adminHandler).<span class="tok-fn">Middlewares</span>(requireAdmin),
+)
+
+<span class="tok-comment">// Group: runs for every route in the group.</span>
+api := <span class="tok-pkg">castor</span>.<span class="tok-fn">Group</span>(<span class="tok-str">"/api"</span>,
+	<span class="tok-pkg">castor</span>.<span class="tok-fn">Get</span>(<span class="tok-str">"/users"</span>, listUsers),
+).<span class="tok-fn">Middlewares</span>(requireAPIKey)
+server.<span class="tok-fn">Groups</span>(api)</code></pre>
+          </div>
+        </div>
+
+        <div class="docs-note">
+          <i class="fa-solid fa-layer-group" aria-hidden="true"></i>
+          <p>Global middleware wraps the router, so it also sees requests that do not match a route. Route and group
+            middleware run only after the router has selected a route. With multiple middleware, the first listed is
+            outermost.</p>
+        </div>
+      </section>
+
+      <section class="docs-section" id="built-ins" aria-labelledby="built-ins-title">
+        <h2 id="built-ins-title">Built-in middlewares</h2>
+        <p>These middleware ship with Castor in <code>github.com/castor-go/castor/middleware</code>.</p>
+
+        <div class="docs-table-wrap">
+          <table class="docs-table">
+            <caption class="sr-only">Built-in Castor middlewares</caption>
+            <thead>
+              <tr>
+                <th scope="col">Middleware</th>
+                <th scope="col">Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>AllowContentEncoding</code></td>
+                <td>Rejects request bodies whose Content-Encoding is not allowed.</td>
+              </tr>
+              <tr>
+                <td><code>AllowContentType</code></td>
+                <td>Rejects request bodies whose media type is not allowed.</td>
+              </tr>
+              <tr>
+                <td><code>BasicAuth</code></td>
+                <td>Protects handlers with HTTP Basic authentication.</td>
+              </tr>
+              <tr>
+                <td><code>CORS</code></td>
+                <td>Handles CORS preflight requests and response headers.</td>
+              </tr>
+              <tr>
+                <td><code>CORSAllowAll</code></td>
+                <td>Permissive CORS preset for all origins, methods, and headers.</td>
+              </tr>
+              <tr>
+                <td><code>CleanPath</code></td>
+                <td>Cleans duplicate slashes and dot segments before routing.</td>
+              </tr>
+              <tr>
+                <td><code>ClientIPFromHeader</code></td>
+                <td>Reads the client IP from a trusted proxy header.</td>
+              </tr>
+              <tr>
+                <td><code>ClientIPFromRemoteAddr</code></td>
+                <td>Stores the client IP from RemoteAddr.</td>
+              </tr>
+              <tr>
+                <td><code>ClientIPFromXFF</code></td>
+                <td>Resolves the client IP from X-Forwarded-For using trusted prefixes.</td>
+              </tr>
+              <tr>
+                <td><code>ClientIPFromXFFTrustedProxies</code></td>
+                <td>Resolves the client IP by counting trusted proxies.</td>
+              </tr>
+              <tr>
+                <td><code>Compress</code></td>
+                <td>Compresses responses with gzip or deflate based on Accept-Encoding.</td>
+              </tr>
+              <tr>
+                <td><code>ContentCharset</code></td>
+                <td>Rejects request bodies whose charset is not allowed.</td>
+              </tr>
+              <tr>
+                <td><code>Deprecation</code></td>
+                <td>Adds RFC 9745 Deprecation and Link headers.</td>
+              </tr>
+              <tr>
+                <td><code>GetHead</code></td>
+                <td>No-op for ServeMux; HEAD is already routed to GET handlers.</td>
+              </tr>
+              <tr>
+                <td><code>Heartbeat</code></td>
+                <td>Answers a GET or HEAD health endpoint without invoking the chain.</td>
+              </tr>
+              <tr>
+                <td><code>Maybe</code></td>
+                <td>Applies another middleware only when a condition matches.</td>
+              </tr>
+              <tr>
+                <td><code>New</code></td>
+                <td>Turns any handler into middleware that always serves it.</td>
+              </tr>
+              <tr>
+                <td><code>NoCache</code></td>
+                <td>Adds response headers that prevent caching.</td>
+              </tr>
+              <tr>
+                <td><code>PageRoute</code></td>
+                <td>Serves a handler for an exact, case-insensitive GET path.</td>
+              </tr>
+              <tr>
+                <td><code>PathRewrite</code></td>
+                <td>Rewrites the first occurrence of a path prefix before routing.</td>
+              </tr>
+              <tr>
+                <td><code>Recoverer</code></td>
+                <td>Recovers panics, logs them, and returns a 500 response.</td>
+              </tr>
+              <tr>
+                <td><code>RedirectSlashes</code></td>
+                <td>Redirects trailing-slash paths to their canonical form.</td>
+              </tr>
+              <tr>
+                <td><code>RequestID</code></td>
+                <td>Adds or reuses a request ID and stores it in the context.</td>
+              </tr>
+              <tr>
+                <td><code>RequestSize</code></td>
+                <td>Limits the number of request body bytes a handler can read.</td>
+              </tr>
+              <tr>
+                <td><code>RouteHeaders</code></td>
+                <td>Routes to middleware based on request header values.</td>
+              </tr>
+              <tr>
+                <td><code>SecureHeaders</code></td>
+                <td>Adds Hono-style security headers with defaults.</td>
+              </tr>
+              <tr>
+                <td><code>SecureHeadersWithOpts</code></td>
+                <td>Security headers with custom CSP, permissions, and header options.</td>
+              </tr>
+              <tr>
+                <td><code>SetHeader</code></td>
+                <td>Sets a response header before calling the next handler.</td>
+              </tr>
+              <tr>
+                <td><code>StripSlashes</code></td>
+                <td>Removes one trailing slash before routing.</td>
+              </tr>
+              <tr>
+                <td><code>Sunset</code></td>
+                <td>Adds RFC 8594 Sunset and Link headers.</td>
+              </tr>
+              <tr>
+                <td><code>SuppressNotFound</code> / <code>SupressNotFound</code></td>
+                <td>Serves the mux's 404 or 405 response before later middleware.</td>
+              </tr>
+              <tr>
+                <td><code>Throttle</code></td>
+                <td>Limits the number of in-flight requests.</td>
+              </tr>
+              <tr>
+                <td><code>ThrottleBacklog</code></td>
+                <td>Adds a finite wait queue to the in-flight request limit.</td>
+              </tr>
+              <tr>
+                <td><code>ThrottleWithOpts</code></td>
+                <td>Configures throttling, backlog, status codes, and Retry-After.</td>
+              </tr>
+              <tr>
+                <td><code>Timeout</code></td>
+                <td>Cancels the request context after a deadline and returns 504 when needed.</td>
+              </tr>
+              <tr>
+                <td><code>URLFormat</code></td>
+                <td>Extracts a trailing URL extension and stores it in the context.</td>
+              </tr>
+              <tr>
+                <td><code>WithValue</code></td>
+                <td>Stores a value in the request context for later handlers.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="docs-section" id="next" aria-labelledby="next-title">
+        <div class="docs-callout">
+          <span class="docs-callout-icon" aria-hidden="true"><i class="fa-solid fa-check"></i></span>
+          <div>
+            <h2 id="next-title">Compose what you need.</h2>
+            <p>Start with one small middleware, apply it where it belongs, and keep the standard library handler
+              contract.</p>
+          </div>
+        </div>
+
+        <div class="docs-actions">
+          <a class="button button-primary" href="https://github.com/castor-go/castor/blob/main/docs/middleware.md"
+            target="_blank" rel="noreferrer">
+            Full middleware reference
+            <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i>
+          </a>
+          <a class="button button-ghost" href="cookies.html">
+            Back to Cookies
+          </a>
+        </div>
+
+        <nav class="docs-footer-nav" aria-label="Next documentation page">
+          <a href="static-assets.html">Next: Static Assets <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></a>
+        </nav>
+      </section>
+    </main>
+  </div>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <a class="brand footer-brand" href="index.html" aria-label="Castor home">
+        <img class="brand-mark" src="assets/castor-mark.svg" width="30" height="30" alt="">
+        <span class="brand-name">Castor</span>
+      </a>
+      <p class="footer-note"><span class="footer-dot" aria-hidden="true"></span> Released under the MIT License</p>
+      <div class="footer-links">
+        <a href="https://github.com/castor-go/castor" target="_blank" rel="noreferrer">GitHub</a>
+        <a href="#main">Back to top <i class="fa-solid fa-arrow-up" aria-hidden="true"></i></a>
+      </div>
+    </div>
+  </footer>
+
+  <p class="sr-only" id="copy-status" role="status" aria-live="polite"></p>
+  <script src="main.js"></script>
+</body>
+
+</html>

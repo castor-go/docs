@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Static Assets — Castor Docs</title>
+  <meta name="description"
+    content="Serve static files with Castor's StaticAssets helper, configure browser caching, and use ETag revalidation.">
+  <meta name="theme-color" content="#E8DCCF">
+  <link rel="icon" type="image/svg+xml" href="assets/castor-mark.svg">
+  <script>
+    (() => {
+      const saved = (() => {
+        try { return localStorage.getItem('castor-theme'); } catch { return null; }
+      })();
+      const theme = saved === 'light' || saved === 'dark'
+        ? saved
+        : (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+      document.documentElement.dataset.theme = theme;
+    })();
+  </script>
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+    crossorigin="anonymous" referrerpolicy="no-referrer">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="docs.css">
+</head>
+
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="site-header">
+    <nav class="nav container" aria-label="Main navigation">
+      <a class="brand" href="index.html" aria-label="Castor home">
+        <img class="brand-mark" src="assets/castor-mark.svg" width="40" height="40" alt="">
+        <span class="brand-name">Castor</span>
+        <span class="brand-badge">Docs</span>
+      </a>
+
+      <div class="nav-links docs-top-nav">
+        <a href="get-started.html">Documentation</a>
+        <a href="https://github.com/castor-go/castor" target="_blank" rel="noreferrer">GitHub</a>
+      </div>
+
+      <div class="nav-actions">
+        <a class="nav-github" href="https://github.com/castor-go/castor" target="_blank" rel="noreferrer"
+          aria-label="Castor on GitHub">
+          <i class="fa-brands fa-github" aria-hidden="true"></i>
+        </a>
+        <button class="theme-toggle" type="button" data-theme-toggle aria-label="Switch to dark theme"
+          aria-pressed="false">
+          <span class="theme-icon theme-icon-light" aria-hidden="true"><i class="fa-solid fa-moon"></i></span>
+          <span class="theme-icon theme-icon-dark" aria-hidden="true"><i class="fa-solid fa-sun"></i></span>
+        </button>
+      </div>
+    </nav>
+  </header>
+
+  <div class="docs-shell container">
+    <aside class="docs-sidebar" aria-label="Documentation navigation">
+      <p class="docs-sidebar-eyebrow">Documentation</p>
+
+      <nav class="docs-nav" aria-label="Documentation pages">
+        <a class="docs-nav-link" href="get-started.html">
+          <span>Get Started</span>
+        </a>
+        <a class="docs-nav-link" href="configuration.html">
+          <span>Configuration</span>
+        </a>
+        <a class="docs-nav-link" href="cookies.html">
+          <span>Cookies</span>
+        </a>
+        <a class="docs-nav-link" href="middlewares.html">
+          <span>Middlewares</span>
+        </a>
+        <a class="docs-nav-link is-active" href="static-assets.html" aria-current="page">
+          <span>Static Assets</span>
+          <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
+        </a>
+      </nav>
+
+      <div class="docs-sidebar-divider" role="presentation"></div>
+      <p class="docs-sidebar-eyebrow docs-sidebar-eyebrow-small">Full reference</p>
+      <nav class="docs-reference-links" aria-label="API reference">
+        <a href="https://github.com/castor-go/castor/blob/main/docs/castor.md" target="_blank" rel="noreferrer">
+          Core API
+          <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i>
+        </a>
+        <a href="https://github.com/castor-go/castor/blob/main/docs/middleware.md" target="_blank" rel="noreferrer">
+          Middlewares
+          <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i>
+        </a>
+      </nav>
+    </aside>
+
+    <main class="docs-content" id="main">
+      <header class="docs-hero">
+        <p class="eyebrow"><span class="eyebrow-dot" aria-hidden="true"></span> Static Assets</p>
+        <h1>Serving static files<span class="hero-period">.</span></h1>
+        <p class="docs-lede">Mount a directory under a URL path with <code>StaticAssets</code>, then add browser cache
+          headers and ETag revalidation when you need them.</p>
+
+        <ul class="docs-meta" aria-label="Guide details">
+          <li class="docs-pill"><i class="fa-regular fa-folder-open" aria-hidden="true"></i> 2 examples</li>
+          <li class="docs-pill"><i class="fa-solid fa-code" aria-hidden="true"></i> Go 1.27+</li>
+          <li class="docs-pill"><i class="fa-solid fa-feather" aria-hidden="true"></i> net/http</li>
+        </ul>
+      </header>
+
+      <section class="docs-section" id="basic" aria-labelledby="basic-title">
+        <div class="docs-step-heading">
+          <span class="step-number" aria-hidden="true">1</span>
+          <h2 id="basic-title">Serve a directory</h2>
+        </div>
+        <p>Call <code>StaticAssets</code> with a URL pattern and a directory. This example serves
+          <code>./public</code> under <code>/assets/</code>.</p>
+
+        <div class="code-card docs-code-card">
+          <div class="code-toolbar">
+            <div class="traffic-lights" aria-hidden="true"><span></span><span></span><span></span></div>
+            <span class="code-filename">main.go</span>
+            <button class="copy-button" type="button" data-copy-target="#basic-code" aria-label="Copy basic static assets example">
+              <span class="copy-default" aria-hidden="true"><i class="fa-regular fa-copy"></i><span
+                  class="copy-label">Copy</span></span>
+              <span class="copy-success" aria-hidden="true"><i class="fa-solid fa-check"></i><span
+                  class="copy-label">Copied</span></span>
+            </button>
+          </div>
+          <div class="code-body">
+            <pre class="code"><code id="basic-code"><span class="tok-kw">package</span> main
+
+<span class="tok-kw">import</span> (
+	<span class="tok-str">"log"</span>
+	<span class="tok-str">"net/http"</span>
+
+	<span class="tok-str">"github.com/castor-go/castor"</span>
+)
+
+<span class="tok-kw">func</span> <span class="tok-fn">main</span>() {
+	server := <span class="tok-pkg">castor</span>.<span class="tok-fn">Server</span>().
+		<span class="tok-fn">StaticAssets</span>(<span class="tok-str">"/assets/**"</span>, <span class="tok-str">"./public"</span>).
+		<span class="tok-fn">Routes</span>(
+			<span class="tok-pkg">castor</span>.<span class="tok-fn">Get</span>(<span class="tok-str">"/"</span>, <span class="tok-kw">func</span>(w <span class="tok-pkg">http</span>.<span class="tok-type">ResponseWriter</span>, r *<span class="tok-pkg">http</span>.<span class="tok-type">Request</span>) {
+				<span class="tok-pkg">castor</span>.<span class="tok-fn">Json</span>(w, <span class="tok-kw">map</span>[<span class="tok-kw">string</span>]<span class="tok-kw">string</span>{<span class="tok-str">"message"</span>: <span class="tok-str">"Hello"</span>})
+			}),
+		)
+
+	<span class="tok-kw">if</span> err := server.<span class="tok-fn">Start</span>(); err != <span class="tok-kw">nil</span> {
+		<span class="tok-pkg">log</span>.<span class="tok-fn">Fatal</span>(err)
+	}
+}</code></pre>
+          </div>
+          <div class="code-status">
+            <span class="status-dot" aria-hidden="true"></span>
+            <span><strong>/assets/css/site.css</strong> reads <strong>./public/css/site.css</strong></span>
+          </div>
+        </div>
+
+        <h3>How patterns map to files</h3>
+        <div class="docs-table-wrap">
+          <table class="docs-table">
+            <caption class="sr-only">Static asset pattern examples</caption>
+            <thead>
+              <tr>
+                <th scope="col">Pattern</th>
+                <th scope="col">Request</th>
+                <th scope="col">File</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>/assets/**</code></td>
+                <td><code>/assets/css/site.css</code></td>
+                <td><code>./public/css/site.css</code></td>
+              </tr>
+              <tr>
+                <td><code>/static/*</code></td>
+                <td><code>/static/logo.svg</code></td>
+                <td><code>./public/logo.svg</code></td>
+              </tr>
+              <tr>
+                <td><code>/</code></td>
+                <td><code>/favicon.ico</code></td>
+                <td><code>./public/favicon.ico</code></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="docs-note">
+          <i class="fa-solid fa-circle-info" aria-hidden="true"></i>
+          <p>A trailing <code>*</code> or <code>**</code> is stripped from the pattern. Files are served with
+            <code>http.FileServer</code> semantics, and only <code>GET</code> routes are registered;
+            <code>HEAD</code> is handled by <code>ServeMux</code> automatically. The directory is resolved relative to
+            the server process working directory.</p>
+        </div>
+      </section>
+
+      <section class="docs-section" id="cache" aria-labelledby="cache-title">
+        <div class="docs-step-heading">
+          <span class="step-number" aria-hidden="true">2</span>
+          <h2 id="cache-title">Add caching and ETags</h2>
+        </div>
+        <p>Pass a <code>StaticConfig</code> to set a browser cache lifetime and enable ETag revalidation.</p>
+
+        <div class="code-card docs-code-card">
+          <div class="code-toolbar">
+            <div class="traffic-lights" aria-hidden="true"><span></span><span></span><span></span></div>
+            <span class="code-filename">main.go</span>
+            <button class="copy-button" type="button" data-copy-target="#cache-code" aria-label="Copy cached static assets example">
+              <span class="copy-default" aria-hidden="true"><i class="fa-regular fa-copy"></i><span
+                  class="copy-label">Copy</span></span>
+              <span class="copy-success" aria-hidden="true"><i class="fa-solid fa-check"></i><span
+                  class="copy-label">Copied</span></span>
+            </button>
+          </div>
+          <div class="code-body">
+            <pre class="code"><code id="cache-code"><span class="tok-kw">package</span> main
+
+<span class="tok-kw">import</span> (
+	<span class="tok-str">"log"</span>
+	<span class="tok-str">"net/http"</span>
+	<span class="tok-str">"time"</span>
+
+	<span class="tok-str">"github.com/castor-go/castor"</span>
+)
+
+<span class="tok-kw">func</span> <span class="tok-fn">main</span>() {
+	server := <span class="tok-pkg">castor</span>.<span class="tok-fn">Server</span>().
+		<span class="tok-fn">StaticAssets</span>(<span class="tok-str">"/assets/**"</span>, <span class="tok-str">"./public"</span>, <span class="tok-pkg">castor</span>.<span class="tok-type">StaticConfig</span>{
+			<span class="tok-fn">CacheMaxAge</span>: <span class="tok-str">24</span> * <span class="tok-pkg">time</span>.<span class="tok-fn">Hour</span>,
+			<span class="tok-fn">ETag</span>:        <span class="tok-kw">true</span>,
+		}).
+		<span class="tok-fn">Routes</span>(
+			<span class="tok-pkg">castor</span>.<span class="tok-fn">Get</span>(<span class="tok-str">"/"</span>, <span class="tok-kw">func</span>(res <span class="tok-pkg">http</span>.<span class="tok-type">ResponseWriter</span>, req *<span class="tok-pkg">http</span>.<span class="tok-type">Request</span>) {
+				<span class="tok-pkg">castor</span>.<span class="tok-fn">Json</span>(res, <span class="tok-kw">map</span>[<span class="tok-kw">string</span>]<span class="tok-kw">string</span>{<span class="tok-str">"message"</span>: <span class="tok-str">"Hello"</span>})
+			}),
+		)
+
+	<span class="tok-kw">if</span> err := server.<span class="tok-fn">Start</span>(); err != <span class="tok-kw">nil</span> {
+		<span class="tok-pkg">log</span>.<span class="tok-fn">Fatal</span>(err)
+	}
+}</code></pre>
+          </div>
+          <div class="code-status">
+            <span class="status-dot" aria-hidden="true"></span>
+            <span>Responses include <strong>Cache-Control</strong> and <strong>ETag</strong></span>
+          </div>
+        </div>
+
+        <h3>StaticConfig options</h3>
+        <div class="docs-table-wrap">
+          <table class="docs-table">
+            <caption class="sr-only">StaticConfig fields</caption>
+            <thead>
+              <tr>
+                <th scope="col">Field</th>
+                <th scope="col">Default</th>
+                <th scope="col">Effect</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>CacheMaxAge</code></td>
+                <td><code>0</code></td>
+                <td>When positive, sets <code>Cache-Control: public, max-age=&lt;seconds&gt;</code>. Zero omits the
+                  header.</td>
+              </tr>
+              <tr>
+                <td><code>ETag</code></td>
+                <td><code>false</code></td>
+                <td>Generates an ETag from the file modification time and size. A matching
+                  <code>If-None-Match</code> returns <code>304 Not Modified</code>.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="docs-note">
+          <i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i>
+          <p><code>StaticAssets</code> uses only the first <code>StaticConfig</code> when several are passed. ETags are
+            based on file metadata, so replacing a file with identical size and modification time can reuse the same
+            ETag.</p>
+        </div>
+      </section>
+
+      <section class="docs-section" id="usage" aria-labelledby="usage-title">
+        <h2 id="usage-title">Reference the files</h2>
+        <p>Once mounted, the files are ordinary URLs. Link them from your HTML or clients:</p>
+
+        <div class="code-card docs-code-card">
+          <div class="code-toolbar">
+            <div class="traffic-lights" aria-hidden="true"><span></span><span></span><span></span></div>
+            <span class="code-filename">index.html</span>
+            <button class="copy-button" type="button" data-copy-target="#usage-code" aria-label="Copy static asset references">
+              <span class="copy-default" aria-hidden="true"><i class="fa-regular fa-copy"></i><span
+                  class="copy-label">Copy</span></span>
+              <span class="copy-success" aria-hidden="true"><i class="fa-solid fa-check"></i><span
+                  class="copy-label">Copied</span></span>
+            </button>
+          </div>
+          <div class="code-body">
+            <pre class="code"><code id="usage-code"><span class="tok-str">&lt;link</span> <span class="tok-fn">rel</span>=<span class="tok-str">"stylesheet"</span> <span class="tok-fn">href</span>=<span class="tok-str">"/assets/css/site.css"</span><span class="tok-str">&gt;</span>
+<span class="tok-str">&lt;script</span> <span class="tok-fn">src</span>=<span class="tok-str">"/assets/js/app.js"</span> <span class="tok-str">defer&gt;&lt;/script&gt;</span>
+<span class="tok-str">&lt;img</span> <span class="tok-fn">src</span>=<span class="tok-str">"/assets/img/logo.svg"</span> <span class="tok-fn">alt</span>=<span class="tok-str">"Logo"</span><span class="tok-str">&gt;</span></code></pre>
+          </div>
+        </div>
+
+        <div class="docs-callout">
+          <span class="docs-callout-icon" aria-hidden="true"><i class="fa-solid fa-folder-tree"></i></span>
+          <div>
+            <h2>Keep the public tree public.</h2>
+            <p>Everything inside the configured directory can be requested through the mounted URL. Do not place
+              secrets, source files, or private uploads in a directory passed to <code>StaticAssets</code>.</p>
+          </div>
+        </div>
+
+        <div class="docs-actions">
+          <a class="button button-primary" href="https://github.com/castor-go/castor/blob/main/docs/castor.md"
+            target="_blank" rel="noreferrer">
+            Core API reference
+            <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i>
+          </a>
+          <a class="button button-ghost" href="middlewares.html">
+            Back to Middlewares
+          </a>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <a class="brand footer-brand" href="index.html" aria-label="Castor home">
+        <img class="brand-mark" src="assets/castor-mark.svg" width="30" height="30" alt="">
+        <span class="brand-name">Castor</span>
+      </a>
+      <p class="footer-note"><span class="footer-dot" aria-hidden="true"></span> Released under the MIT License</p>
+      <div class="footer-links">
+        <a href="https://github.com/castor-go/castor" target="_blank" rel="noreferrer">GitHub</a>
+        <a href="#main">Back to top <i class="fa-solid fa-arrow-up" aria-hidden="true"></i></a>
+      </div>
+    </div>
+  </footer>
+
+  <p class="sr-only" id="copy-status" role="status" aria-live="polite"></p>
+  <script src="main.js"></script>
+</body>
+
+</html>
